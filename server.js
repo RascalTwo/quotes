@@ -7,13 +7,22 @@ const PORT = process.env.PORT || 1337;
 const MONGODB_URL = process.env.MONGODB_URL;
 
 const app = express();
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (request, response) => {
-	response.send('Hello, World!');
+	response.render('index.ejs', { quotes: [] })
 });
 
-app.get('/secret', (request, response) => {
-	response.send(process.env.SECRET);
+app.get('/search', (request, response, next) => {
+	const { query } = request.query;
+	if (!query) return response.render('index.ejs', { quotes: [] });
+
+	return client.db('quotes').collection('quotes').find(query.length > 3
+		? { $text: { $search: `\"${query}\"` } }
+		: { text: { $regex: query, $options: 'i' } }
+	).toArray()
+		.then(quotes => response.render('index.ejs', { quotes: quotes }))
+		.catch(next);
 });
 
 

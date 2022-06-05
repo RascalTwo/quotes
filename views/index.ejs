@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Document</title>
+	</head>
+
+	<body>
+		<form action="/search">
+			<label>Query <input name="query" required /></label>
+			<button>Search</button>
+		</form>
+		<p><%= quotes.length %> quotes found</p>
+		<ul>
+			<% for (const quote of quotes) { %>
+				<li>S<%= quote.season %>.E<%= quote.episode.join('-') %> at <%= new Date(quote.timeStamp * 1000).toISOString().substr(11, 8); %> - <%= quote.text %></li>
+			<% } %>
+		</ul>
+	</body>
+
+</html>
