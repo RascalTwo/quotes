@@ -19,7 +19,7 @@ app.get('/search', (request, response, next) => {
 
 	return client.db('quotes').collection('quotes').find(query.length > 3
 		? { $text: { $search: `\"${query}\"` } }
-		: { text: { $regex: query, $options: 'i' } }
+		: { text: { $regex: [...query].map(char => `[${char}]`).join(''), $options: 'i' } }
 	).toArray()
 		.then(quotes => response.render('index.ejs', { quotes: quotes }))
 		.catch(next);
