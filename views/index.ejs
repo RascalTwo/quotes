@@ -20,7 +20,7 @@
 					S<%= quote.season %>.E<%= quote.episodes.join('-') %>
 					at <%= new Date(quote.timeStamp * 1000).toISOString().substr(11, 8); %>
 
-					- <%- quote.text.replace(new RegExp('(' + query + ')', 'ig'), '<b>$1</b>') %>
+					- <%- quote.text.replace(new RegExp('(' + [...query].map(char => `[${char}]`).join('') + ')', 'ig'), '<b>$1</b>') %>
 				</li>
 			<% } %>
 		</ul>
