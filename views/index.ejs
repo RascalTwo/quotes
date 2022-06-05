@@ -6,31 +6,47 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Document</title>
+		<style>
+			h1, h2, p {
+				text-align: center;
+			}
+
+			fieldset {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				width: max-content;
+				margin: auto;
+			}
+		</style>
 	</head>
 
 	<body>
+		<h1>The Office Quotes Search API</h1>
 		<form action="/search">
 			<fieldset>
 				<legend>Controls</legend>
-				<label>
+				<label for="queryInput">
 					Query
-					<input
-						name="query"
-						required
-						value="<%= typeof query === 'undefined' ? '' : query %>"
-					/>
 				</label>
-				<label>
+				<input
+					id="queryInput"
+					name="query"
+					required
+					value="<%= typeof query === 'undefined' ? '' : query %>"
+				/>
+				<label for="pageInput">
 					Page
-					<input
-						name="page"
-						min="1"
-						type="number"
-						value="<%= typeof page === 'undefined' ? 1 : page %>"
-						max="<%= typeof pageCount === 'undefined' ? 1 : pageCount %>"
-					/>
 				</label>
+				<input
+					id="pageInput"
+					name="page"
+					min="1"
+					type="number"
+					value="<%= typeof page === 'undefined' ? 1 : page %>"
+					max="<%= typeof pageCount === 'undefined' ? 1 : pageCount %>"
+				/>
 				<button>Submit</button>
+				<button type="reset">Reset</button>
 			</fieldset>
 		</form>
 		<p><%= quotes.length ? (typeof totalCount === 'undefined' ? quotes.length + '+' : totalCount) : 'No' %> quotes found</p>
@@ -44,6 +60,12 @@
 				</li>
 			<% } %>
 		</ul>
+		<footer>
+			<h2>JSON API Endpoint</h2>
+			<code>https://r2-quotes.herokuapp.com/api/search?query=QUERY&page=1&includeCount=true&perPage=10</code>
+			<br/>
+			<code>https://r2-quotes.herokuapp.com/api/random</code>
+		</footer>
 	</body>
 
 </html>
