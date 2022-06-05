@@ -21,7 +21,7 @@ app.get('/search', (request, response, next) => {
 		? { $text: { $search: `\"${query}\"` } }
 		: { text: { $regex: [...query].map(char => `[${char}]`).join(''), $options: 'i' } }
 	).toArray()
-		.then(quotes => response.render('index.ejs', { quotes: quotes }))
+		.then(quotes => response.render('index.ejs', { quotes, query }))
 		.catch(next);
 });
 
