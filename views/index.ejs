@@ -10,19 +10,30 @@
 
 	<body>
 		<form action="/search">
-			<label>Query <input name="query" required /></label>
-			<button>Search</button>
+			<fieldset>
+				<legend>Controls</legend>
+				<label>
+					Query
+					<input
+						name="query"
+						required
+						value="<%= typeof query === 'undefined' ? '' : query %>"
+					/>
+				</label>
+				<label>
+					Page
+					<input
+						name="page"
+						min="1"
+						type="number"
+						value="<%= typeof page === 'undefined' ? 1 : page %>"
+						max="<%= typeof pageCount === 'undefined' ? 1 : pageCount %>"
+					/>
+				</label>
+				<button>Submit</button>
+			</fieldset>
 		</form>
 		<p><%= quotes.length ? (typeof totalCount === 'undefined' ? quotes.length + '+' : totalCount) : 'No' %> quotes found</p>
-		<% if (typeof pageCount !== 'undefined') { %>
-			<nav>
-				<ul>
-					<% for (let page = 1; page <= pageCount; page++) { %>
-						<li><a href="/search?query=<%= query %>&page=<%= page %>"><%= page %></a></li>
-					<% } %>
-				</ul>
-			</nav>
-		<% } %>
 		<ul>
 			<% for (const quote of quotes) { %>
 				<li>
