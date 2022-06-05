@@ -14,7 +14,7 @@ app.get('/', (request, response) => {
 	response.render('index.ejs', { quotes: [] })
 });
 
-async function queryDBForQuote(query, page = 0, perPage = 100, includeCounts = false) {
+async function queryDBForQuote(query, page = 1, perPage = 100, includeCounts = false) {
 	if (!query) return { quotes: [], ...(includeCounts ? { totalCount: 0 } : {}) };
 
 	const filter = query.length > 3
@@ -24,17 +24,15 @@ async function queryDBForQuote(query, page = 0, perPage = 100, includeCounts = f
 	return client.db('quotes').collection('quotes')
 		.find(filter)
 		.sort({ season: 'asc', episodes: 'asc', timeStamp: 'asc' })
-		.skip(page * perPage)
+		.skip((page - 1) * perPage)
 		.limit(perPage)
 		.toArray()
 		.then(async quotes => {
 			const results = { quotes: quotes.map(({ _id, ...quote }) => quote) };
 
-			let totalCount = quotes.length;
-			if (quotes.length >= perPage && includeCounts) totalCount = await client.db('quotes').collection('quotes').countDocuments(filter);
 			if (includeCounts) {
-				results.totalCount = totalCount;
-				results.pageCount = Math.ceil(totalCount / perPage)
+				results.totalCount = await client.db('quotes').collection('quotes').countDocuments(filter);
+				results.pageCount = Math.ceil(results.totalCount / perPage)
 			}
 
 			return results;
@@ -42,7 +40,7 @@ async function queryDBForQuote(query, page = 0, perPage = 100, includeCounts = f
 }
 
 app.get('/search', (request, response, next) => {
-	const { query, page = 0, perPage = 100 } = request.query;
+	const { query, page = 1, perPage = 100 } = request.query;
 	return queryDBForQuote(query, +page, +perPage, true)
 		.then(({ quotes, totalCount, pageCount }) => response.render('index.ejs', { quotes, query, totalCount, pageCount, page }))
 		.catch(next);
@@ -53,7 +51,7 @@ const router = express.Router();
 router.use(cors());
 
 router.get('/search', (request, response, next) => {
-	const { query = '', page = 0, perPage = 100, includeCounts = false } = request.query;
+	const { query = '', page = 1, perPage = 100, includeCounts = false } = request.query;
 	return queryDBForQuote(query, +page, +perPage, includeCounts)
 		.then(({ quotes, totalCount, pageCount }) => response.send({ quotes, query, totalCount, pageCount, page }))
 		.catch(next);

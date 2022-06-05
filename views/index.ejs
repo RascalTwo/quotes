@@ -17,7 +17,7 @@
 		<% if (typeof pageCount !== 'undefined') { %>
 			<nav>
 				<ul>
-					<% for (let page = 0; page < pageCount; page++) { %>
+					<% for (let page = 1; page <= pageCount; page++) { %>
 						<li><a href="/search?query=<%= query %>&page=<%= page %>"><%= page %></a></li>
 					<% } %>
 				</ul>
