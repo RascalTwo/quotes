@@ -13,15 +13,37 @@ app.get('/', (request, response) => {
 	response.render('index.ejs', { quotes: [] })
 });
 
-app.get('/search', (request, response, next) => {
-	const { query } = request.query;
-	if (!query) return response.render('index.ejs', { quotes: [] });
+async function queryDBForQuote(query, page = 0, perPage = 100, includeCounts = false) {
+	if (!query) return { quotes: [], ...(includeCounts ? { totalCount: 0 } : {}) };
 
-	return client.db('quotes').collection('quotes').find(query.length > 3
+	const filter = query.length > 3
 		? { $text: { $search: `\"${query}\"` } }
-		: { text: { $regex: [...query].map(char => `[${char}]`).join(''), $options: 'i' } }
-	).toArray()
-		.then(quotes => response.render('index.ejs', { quotes, query }))
+		: { text: { $regex: [...query].map(char => `[${char}]`).join(''), $options: 'i' } };
+
+	return client.db('quotes').collection('quotes')
+		.find(filter)
+		.sort({ season: 'asc', episodes: 'asc', timeStamp: 'asc' })
+		.skip(page * perPage)
+		.limit(perPage)
+		.toArray()
+		.then(async quotes => {
+			const results = { quotes };
+
+			let totalCount = quotes.length;
+			if (quotes.length >= perPage && includeCounts) totalCount = await client.db('quotes').collection('quotes').countDocuments(filter);
+			if (includeCounts) {
+				results.totalCount = totalCount;
+				results.pageCount = Math.ceil(totalCount / perPage)
+			}
+
+			return results;
+		})
+}
+
+app.get('/search', (request, response, next) => {
+	const { query, page, perPage } = request.query;
+	return queryDBForQuote(query, page, perPage, true)
+		.then(({ quotes, totalCount, pageCount }) => response.render('index.ejs', { quotes, query, totalCount, pageCount, page }))
 		.catch(next);
 });
 

@@ -13,7 +13,14 @@
 			<label>Query <input name="query" required /></label>
 			<button>Search</button>
 		</form>
-		<p><%= quotes.length %> quotes found</p>
+		<p><%= totalCount === undefined ? quotes.length + '+' : totalCount%> quotes found</p>
+		<nav>
+			<ul>
+				<% for (let page = 0; page < pageCount; page++) { %>
+					<li><a href="/search?query=<%= query %>&page=<%= page %>"><%= page %></a></li>
+				<% } %>
+			</ul>
+		</nav>
 		<ul>
 			<% for (const quote of quotes) { %>
 				<li>
