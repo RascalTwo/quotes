@@ -13,14 +13,16 @@
 			<label>Query <input name="query" required /></label>
 			<button>Search</button>
 		</form>
-		<p><%= totalCount === undefined ? quotes.length + '+' : totalCount%> quotes found</p>
-		<nav>
-			<ul>
-				<% for (let page = 0; page < pageCount; page++) { %>
-					<li><a href="/search?query=<%= query %>&page=<%= page %>"><%= page %></a></li>
-				<% } %>
-			</ul>
-		</nav>
+		<p><%= quotes.length ? (typeof totalCount === 'undefined' ? quotes.length + '+' : totalCount) : 'No' %> quotes found</p>
+		<% if (typeof pageCount !== 'undefined') { %>
+			<nav>
+				<ul>
+					<% for (let page = 0; page < pageCount; page++) { %>
+						<li><a href="/search?query=<%= query %>&page=<%= page %>"><%= page %></a></li>
+					<% } %>
+				</ul>
+			</nav>
+		<% } %>
 		<ul>
 			<% for (const quote of quotes) { %>
 				<li>

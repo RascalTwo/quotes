@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { MongoClient } from 'mongodb'
 import express from 'express';
+import cors from 'cors';
 
 
 const PORT = process.env.PORT || 1337;
@@ -27,7 +28,7 @@ async function queryDBForQuote(query, page = 0, perPage = 100, includeCounts = f
 		.limit(perPage)
 		.toArray()
 		.then(async quotes => {
-			const results = { quotes };
+			const results = { quotes: quotes.map(({ _id, ...quote }) => quote) };
 
 			let totalCount = quotes.length;
 			if (quotes.length >= perPage && includeCounts) totalCount = await client.db('quotes').collection('quotes').countDocuments(filter);
@@ -41,18 +42,30 @@ async function queryDBForQuote(query, page = 0, perPage = 100, includeCounts = f
 }
 
 app.get('/search', (request, response, next) => {
-	const { query, page, perPage } = request.query;
-	return queryDBForQuote(query, page, perPage, true)
+	const { query, page = 0, perPage = 100 } = request.query;
+	return queryDBForQuote(query, +page, +perPage, true)
 		.then(({ quotes, totalCount, pageCount }) => response.render('index.ejs', { quotes, query, totalCount, pageCount, page }))
 		.catch(next);
 });
 
+const router = express.Router();
+
+router.use(cors());
+
+router.get('/search', (request, response, next) => {
+	const { query = '', page = 0, perPage = 100, includeCounts = false } = request.query;
+	return queryDBForQuote(query, +page, +perPage, includeCounts)
+		.then(({ quotes, totalCount, pageCount }) => response.send({ quotes, query, totalCount, pageCount, page }))
+		.catch(next);
+});
+
+app.use('/api', router);
 
 if (!MONGODB_URL) throw new Error('MONGODB_URL environment variable required.')
 
 const client = new MongoClient(process.env.MONGODB_URL);
 client.connect().then(client => {
-  console.log('Connected successfully to server');
+	console.log('Connected successfully to server');
 
 	app.listen(PORT, () => console.log(`Listening at http://localhost:${PORT}`));
 }).catch(console.error)
