@@ -16,9 +16,9 @@ app.get('/', (request, response) => {
 });
 
 app.get('/search', (request, response, next) => {
-	const { query, page = 1, perPage = 100 } = request.query;
-	return queryDBForQuote(query, +page, +perPage, true)
-		.then(({ quotes, totalCount, pageCount }) => response.render('index.ejs', { quotes, query, totalCount, pageCount, page }))
+	const { query, show = undefined, page = 1, perPage = 100 } = request.query;
+	return queryDBForQuote(query, show, +page, +perPage, true)
+		.then(({ quotes, totalCount, pageCount }) => response.render('index.ejs', { quotes, query, totalCount, pageCount, page, show }))
 		.catch(next);
 });
 
@@ -27,9 +27,9 @@ const router = express.Router();
 router.use(cors());
 
 router.get('/search', (request, response, next) => {
-	const { query = '', page = 1, perPage = 100, includeCounts = false } = request.query;
-	return queryDBForQuote(query, +page, +perPage, includeCounts)
-		.then(({ quotes, totalCount, pageCount }) => response.send({ quotes, query, totalCount, pageCount, page }))
+	const { query = '', show = undefined, page = 1, perPage = 100, includeCounts = false } = request.query;
+	return queryDBForQuote(query, show, +page, +perPage, includeCounts)
+		.then(({ quotes, totalCount, pageCount }) => response.send({ quotes, totalCount, pageCount }))
 		.catch(next);
 });
 
