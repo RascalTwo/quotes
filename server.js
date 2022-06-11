@@ -1,9 +1,9 @@
 import 'dotenv/config';
 import express from 'express';
-import cors from 'cors';
 
 import client from './database.js';
-import { queryDBForQuote, queryRandomQuote, queryShowNames } from './controller.js';
+import apiRouter from './api.js'
+import { queryDBForQuote, queryShowNames } from './controller.js';
 
 
 const PORT = process.env.PORT || 1337;
@@ -26,29 +26,7 @@ app.get('/search', (request, response, next) => {
 		.catch(next);
 });
 
-const router = express.Router();
-
-router.use(cors());
-
-router.get('/search', (request, response, next) => {
-	const { query = '', show = undefined, page = 1, perPage = 100, includeCounts = false } = request.query;
-	return queryDBForQuote(query, show, +page, +perPage, includeCounts)
-		.then(({ quotes, totalCount, pageCount }) => response.send({ quotes, totalCount, pageCount }))
-		.catch(next);
-});
-
-router.get('/show-names', (request, response, next) => {
-	return queryShowNames().then(showNames => response.json(showNames)).catch(next)
-});
-
-router.get('/random', (request, response, next) => {
-	return queryRandomQuote()
-		.then(quote => response.send(quote))
-		.catch(next)
-})
-
-app.use('/api', router);
-
+app.use('/api', apiRouter);
 
 client.connect().then(() => {
 	console.log('Connected successfully to server');
