@@ -43,7 +43,7 @@
 					min="1"
 					type="number"
 					value="<%= typeof page === 'undefined' ? 1 : page %>"
-					max="<%= typeof pageCount === 'undefined' ? 1 : pageCount %>"
+					max="<%= typeof pageCount === 'undefined' ? 1 : Math.max(pageCount, 1) %>"
 				/>
 				<button>Submit</button>
 				<button type="reset">Reset</button>
