@@ -62,7 +62,7 @@
 			<%
 			var show;
 			for (const quote of quotes) {
-				if (show !== quote.show) {
+				if (show.toLowerCase() !== quote.show.toLowerCase()) {
 					show = quote.show
 					%> <li> <%= show %> </li> <%
 				}

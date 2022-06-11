@@ -13,7 +13,7 @@ export async function queryDBForQuote(query, show = undefined, page = 1, perPage
 	const filter = query.length > 3
 		? { $text: { $search: `\"${query}\"` } }
 		: { text: { $regex: [...query].map(char => `[${char}]`).join(''), $options: 'i' } };
-	if (show) filter.show = show;
+	if (show) filter.show = new RegExp(show, 'i');
 
 	return client.db('quotes').collection('quotes')
 		.find(filter)
