@@ -14,9 +14,9 @@ async function parseSRTs(directory, showName) {
 		const entityAbsolute = path.join(absolute, entityName)
 		if ((await fs.promises.stat(entityAbsolute)).isFile()) continue;
 
-		const season = +entityName.split(' ').at(-1);
+		const season = +entityName.match(/\d+/)[0]
 		for (const srtFilename of await fs.promises.readdir(entityAbsolute)) {
-			const episodes = srtFilename.match(/E\d+/g).map(e => +e.slice(1));
+			const episodes = srtFilename.match(/E\d+/ig).map(e => +e.slice(1));
 			const srt = (await fs.promises.readFile(path.join(entityAbsolute, srtFilename))).toString();
 			entries.push(...parseSRT(srt).map(({ start, text }) => ({
 				show: showName,
@@ -43,7 +43,7 @@ parseSRTs(directory, showName).then(async entries => {
 
 	console.log(entries.length, 'entries parsed');
 	const collection = client.db('quotes').collection('quotes');
-	await collection.drop({ show: showName });
-	await collection.insertMany(entries);
-	return collection.createIndex({ text: 'text' });
-}).then(console.log).catch(console.error)
+	console.log('Inserted:', (await collection.insertMany(entries)).insertedCount);
+	await collection.createIndex({ text: 'text' });
+	return client.close()
+}).catch(console.error)
