@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 
 import client from './database.js';
-import { queryDBForQuote, queryRandomQuote } from './controller.js';
+import { queryDBForQuote, queryRandomQuote, queryShowNames } from './controller.js';
 
 
 const PORT = process.env.PORT || 1337;
@@ -11,14 +11,18 @@ const PORT = process.env.PORT || 1337;
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (request, response) => {
-	response.render('index.ejs', { quotes: [] })
+app.get('/', async (request, response) => {
+	response.render('index.ejs', { quotes: [], showNames: await queryShowNames() })
 });
 
 app.get('/search', (request, response, next) => {
 	const { query, show = undefined, page = 1, perPage = 100 } = request.query;
 	return queryDBForQuote(query, show, +page, +perPage, true)
-		.then(({ quotes, totalCount, pageCount }) => response.render('index.ejs', { quotes, query, totalCount, pageCount, page, show }))
+		.then(async ({ quotes, totalCount, pageCount }) => response.render('index.ejs', {
+			quotes, totalCount, pageCount,
+			show, query, page,
+			showNames: await queryShowNames()
+		}))
 		.catch(next);
 });
 
@@ -31,6 +35,10 @@ router.get('/search', (request, response, next) => {
 	return queryDBForQuote(query, show, +page, +perPage, includeCounts)
 		.then(({ quotes, totalCount, pageCount }) => response.send({ quotes, totalCount, pageCount }))
 		.catch(next);
+});
+
+router.get('/show-names', (request, response, next) => {
+	return queryShowNames().then(showNames => response.json(showNames)).catch(next)
 });
 
 router.get('/random', (request, response, next) => {

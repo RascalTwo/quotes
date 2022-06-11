@@ -32,3 +32,7 @@ export async function queryDBForQuote(query, show = undefined, page = 1, perPage
 			return results;
 		})
 }
+
+export async function queryShowNames(){
+	return client.db('quotes').collection('quotes').distinct('show');
+}

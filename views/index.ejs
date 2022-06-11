@@ -31,8 +31,15 @@
 				<input
 					id="showInput"
 					name="show"
+					list="showNames"
+					autocomplete="off"
 					value="<%= typeof show === 'undefined' ? '' : show %>"
 				/>
+				<datalist id="showNames">
+					<% for (const showName of showNames) { %>
+						<option><%= showName %></option>
+					<% } %>
+				</datalist>
 				<label for="queryInput">
 					Query
 				</label>
