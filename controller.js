@@ -36,3 +36,16 @@ export async function queryDBForQuote(query, show = undefined, page = 1, perPage
 export async function queryShowNames(){
 	return client.db('quotes').collection('quotes').distinct('show');
 }
+
+export async function queryShowInfo(show){
+	return client.db('quotes').collection('quotes').aggregate([{
+		$match: { show }
+	}, {
+		$group: { _id: { season: "$season", episodes: "$episodes" }}
+	}]).toArray().then(entities => entities.reduce((seasons, { _id: { season, episodes } }) => {
+		if (!(season in seasons)) seasons[season] = [];
+		seasons[season].push(episodes.join('-'));
+		seasons[season].sort((a, b) => parseInt(a) - parseInt(b));
+		return seasons;
+	}, {}));
+}

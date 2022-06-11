@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import cors from 'cors';
-import { queryDBForQuote, queryRandomQuote, queryShowNames } from './controller';
+import { queryDBForQuote, queryRandomQuote, queryShowInfo, queryShowNames } from './controller.js';
 
 const router = Router();
 
@@ -15,6 +15,11 @@ router.get('/search', (request, response, next) => {
 
 router.get('/show-names', (request, response, next) => {
 	return queryShowNames().then(showNames => response.json(showNames)).catch(next)
+});
+
+router.get('/show-info', (request, response, next) => {
+	const { show = undefined } = request.query;
+	return queryShowInfo(show).then(showNames => response.json(showNames)).catch(next)
 });
 
 router.get('/random', (request, response, next) => {
