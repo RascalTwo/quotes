@@ -3,12 +3,13 @@ import express from 'express';
 
 import client from './database.js';
 import apiRouter from './api.js'
-import { queryDBForQuote, queryShowNames } from './controller.js';
+import { queryDBForQuote, queryShowInfo, queryShowNames } from './controller.js';
 
 
 const PORT = process.env.PORT || 1337;
 
 const app = express();
+app.use(express.static('./public'));
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', async (request, response) => {
@@ -16,12 +17,13 @@ app.get('/', async (request, response) => {
 });
 
 app.get('/search', (request, response, next) => {
-	const { query, show = undefined, page = 1, perPage = 100 } = request.query;
-	return queryDBForQuote(query, show, +page, +perPage, true)
+	const { query, show = undefined, season = undefined, episodes = undefined, page = 1, perPage = 100 } = request.query;
+	return queryDBForQuote(query, show, season, episodes, +page, +perPage, true)
 		.then(async ({ quotes, totalCount, pageCount }) => response.render('index.ejs', {
 			quotes, totalCount, pageCount,
-			show, query, page,
-			showNames: await queryShowNames()
+			query, show, season, episodes, page,
+			showNames: await queryShowNames(),
+			showInfo: show ? await queryShowInfo(show) : undefined
 		}))
 		.catch(next);
 });

@@ -7,13 +7,15 @@ export function queryRandomQuote(){
 		.then(([quote]) => stripQuote(quote))
 }
 
-export async function queryDBForQuote(query, show = undefined, page = 1, perPage = 100, includeCounts = false) {
+export async function queryDBForQuote(query, show = undefined, season = undefined, episodes = undefined, page = 1, perPage = 100, includeCounts = false) {
 	if (!query) return { quotes: [], ...(includeCounts ? { totalCount: 0 } : {}) };
 
 	const filter = query.length > 3
 		? { $text: { $search: `\"${query}\"` } }
 		: { text: { $regex: [...query].map(char => `[${char}]`).join(''), $options: 'i' } };
 	if (show) filter.show = new RegExp(show, 'i');
+	if (season) filter.season = parseInt(season) || season;
+	if (episodes) filter.episodes = parseInt(episodes) || episodes;
 
 	return client.db('quotes').collection('quotes')
 		.find(filter)

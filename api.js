@@ -7,8 +7,8 @@ const router = Router();
 router.use(cors());
 
 router.get('/search', (request, response, next) => {
-	const { query = '', show = undefined, page = 1, perPage = 100, includeCounts = false } = request.query;
-	return queryDBForQuote(query, show, +page, +perPage, includeCounts)
+	const { query = '', show = undefined, season = undefined, episodes = undefined, page = 1, perPage = 100, includeCounts = false } = request.query;
+	return queryDBForQuote(query, show, season, episodes, +page, +perPage, includeCounts)
 		.then(({ quotes, totalCount, pageCount }) => response.send({ quotes, totalCount, pageCount }))
 		.catch(next);
 });

@@ -40,6 +40,39 @@
 						<option><%= showName %></option>
 					<% } %>
 				</datalist>
+				<label for="seasonInput">
+					Season #
+				</label>
+				<input
+					id="seasonInput"
+					name="season"
+					list="seasonList"
+					autocomplete="off"
+					value="<%= typeof season === 'undefined' ? '' : season %>"
+					min="1"
+				/>
+				<datalist id="seasonList">
+					<% for (const number in (typeof showInfo === 'undefined' ? {} : showInfo)) { %>
+						<option><%= number %></option>
+					<% } %>
+				</datalist>
+				<label for="episodesInput">
+					Episodes
+				</label>
+				<input
+					id="episodesInput"
+					name="episodes"
+					list="episodesList"
+					autocomplete="off"
+					value="<%= typeof episodes === 'undefined' ? '' : episodes %>"
+					min="1"
+				/>
+				<datalist id="episodesList">
+					<% for (const number of (typeof showInfo === 'undefined' ? {} : showInfo)[season] || []) { %>
+						<option><%= number %></option>
+					<% } %>
+				</datalist>
+
 				<label for="queryInput">
 					Query
 				</label>
@@ -88,6 +121,8 @@
 			<br/>
 			<code>https://r2-quotes.herokuapp.com/api/random</code>
 		</footer>
+
+		<script src="/index.js"></script>
 	</body>
 
 </html>
