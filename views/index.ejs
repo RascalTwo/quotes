@@ -25,6 +25,7 @@
 		<form action="/search">
 			<fieldset>
 				<legend>Controls</legend>
+
 				<label for="showInput">
 					Show
 				</label>
@@ -40,6 +41,7 @@
 						<option><%= showName %></option>
 					<% } %>
 				</datalist>
+
 				<label for="seasonInput">
 					Season #
 				</label>
@@ -56,6 +58,7 @@
 						<option><%= number %></option>
 					<% } %>
 				</datalist>
+
 				<label for="episodesInput">
 					Episodes
 				</label>
@@ -82,6 +85,7 @@
 					required
 					value="<%= typeof query === 'undefined' ? '' : query %>"
 				/>
+
 				<label for="pageInput">
 					Page
 				</label>
@@ -93,6 +97,7 @@
 					value="<%= typeof page === 'undefined' ? 1 : page %>"
 					max="<%= typeof pageCount === 'undefined' ? 1 : Math.max(pageCount, 1) %>"
 				/>
+
 				<button>Submit</button>
 				<button type="reset">Reset</button>
 			</fieldset>
