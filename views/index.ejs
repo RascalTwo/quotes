@@ -81,7 +81,7 @@
 					min="1"
 				/>
 				<datalist id="episodesList">
-					<% for (const number of (typeof showInfo === 'undefined' ? {} : showInfo)[season] || []) { %>
+					<% for (const number of (typeof showInfo === 'undefined' ? {} : showInfo)[typeof season === 'undefined' ? undefined : season] || []) { %>
 						<option><%= number %></option>
 					<% } %>
 				</datalist>
@@ -122,7 +122,7 @@
 		</ul>
 		<footer>
 			<h2>JSON API Endpoint</h2>
-			<code>https://r2-quotes.herokuapp.com/api/search?query=<%= encodeURIComponent(query) %>&show=<%= encodeURIComponent(show) %>&season=<%= encodeURIComponent(season) %>&episodes=<%= encodeURIComponent(episodes) %>page=<%= encodeURIComponent(page) %>&includeCount=true&perPage=100</code>
+			<code>https://r2-quotes.herokuapp.com/api/search?query=<%= encodeURIComponent(locals.query) %>&show=<%= encodeURIComponent(locals.show) %>&season=<%= encodeURIComponent(locals.season) %>&episodes=<%= encodeURIComponent(locals.episodes) %>page=<%= encodeURIComponent(locals.page) %>&includeCount=true&perPage=100</code>
 			<br/>
 			<code>https://r2-quotes.herokuapp.com/api/random</code>
 		</footer>
