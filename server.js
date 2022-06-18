@@ -44,5 +44,10 @@ client.connect().then(async () => {
 	app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(openAPI.apiDoc));
 	app.use('/api-docs.json', (_, response) => response.send(openAPI.apiDoc));
 
+	app.use((error, request, response, next) => {
+		if (error instanceof Error) return next(error)
+		response.status(error.status).send(error.errors);
+	});
+
 	app.listen(PORT, () => console.log(`Listening at http://localhost:${PORT}`));
 }).catch(console.error)
