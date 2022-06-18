@@ -27,8 +27,10 @@ export async function queryDBForQuote(query, show = undefined, season = undefine
 			const results = { quotes: quotes.map(stripQuote) };
 
 			if (includeCounts) {
-				results.totalCount = await client.db('quotes').collection('quotes').countDocuments(filter);
-				results.pageCount = Math.ceil(results.totalCount / perPage)
+				results.counts = {
+					total: await client.db('quotes').collection('quotes').countDocuments(filter)
+				};
+				results.counts.page = Math.ceil(results.counts.total / perPage);
 			}
 
 			return results;

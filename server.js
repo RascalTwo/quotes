@@ -1,8 +1,10 @@
 import 'dotenv/config';
 import express from 'express';
+import { initialize } from 'express-openapi';
+import swaggerUI from 'swagger-ui-express';
 
 import client from './database.js';
-import apiRouter from './api.js'
+import buildAPIDoc from './api/doc.js';
 import { queryDBForQuote, queryShowInfo, queryShowNames } from './controller.js';
 
 
@@ -12,7 +14,7 @@ const app = express();
 app.use(express.static('./public'));
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', async (request, response) => {
+app.get('/', async (_, response) => {
 	response.render('index.ejs', { quotes: [], showNames: await queryShowNames() })
 });
 
@@ -28,10 +30,19 @@ app.get('/search', (request, response, next) => {
 		.catch(next);
 });
 
-app.use('/api', apiRouter);
-
-client.connect().then(() => {
+client.connect().then(async () => {
 	console.log('Connected successfully to server');
+
+	const showNames = await queryShowNames();
+	const openAPI = await initialize({
+		app,
+		apiDoc: buildAPIDoc(showNames),
+		paths: './api/paths',
+		exposeApiDocs: false,
+		dependencies: { showNames }
+	});
+	app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(openAPI.apiDoc));
+	app.use('/api-docs.json', (_, response) => response.send(openAPI.apiDoc));
 
 	app.listen(PORT, () => console.log(`Listening at http://localhost:${PORT}`));
 }).catch(console.error)
