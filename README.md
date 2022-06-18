@@ -4,9 +4,11 @@
 
 Return when things were said in your favorite media!
 
+Defined as an [OpenAPI](http://localhost:1337/api-docs.json), for easy documentation via [Swagger UI](http://localhost:1337/api-docs/) and usage with [various tools](https://learning.postman.com/docs/integrations/available-integrations/working-with-openAPI/).
+
 ## Examples
 
-> https://r2-quotes.herokuapp.com/api/search?query=Sometimes%20I'll&show=The%20Office&season=5&episodes=11page=1&includeCount=true&perPage=100
+> https://r2-quotes.herokuapp.com/api/search?query=Sometimes%20I'll&show=The%20Office&season=5&episodes=11&page=1&includeCount=true&perPage=100
 
 ```json
 {
