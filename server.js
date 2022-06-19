@@ -5,14 +5,28 @@ import swaggerUI from 'swagger-ui-express';
 
 import buildAPIDoc from './api/doc.js';
 import { queryDBForQuote, queryShowInfo, queryShowNames } from './controller.js';
+import { execSync } from 'child_process';
 
+
+const DEPLOY_INFO = (() => {
+	const prefix = process.env.npm_package_version;
+	/* c8 ignore next */
+	if (process.env.HEROKU_SLUG_COMMIT) return prefix + '-' + process.env.HEROKU_SLUG_COMMIT.slice(0, 7) + ' @ ' + process.env.HEROKU_RELEASE_CREATED_AT;
+
+	try {
+		return prefix + '-' + execSync('git rev-parse HEAD').toString().trim().slice(0, 7);
+		/* c8 ignore next 3 */
+	} catch (e) {
+		return prefix;
+	}
+})();
 
 const app = express();
 app.use(express.static('./public'));
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', async (_, response) => {
-	response.render('index.ejs', { quotes: [], showNames: await queryShowNames() })
+	response.render('index.ejs', { quotes: [], showNames: await queryShowNames(), DEPLOY_INFO })
 });
 
 app.get('/search', (request, response, next) => {
@@ -22,7 +36,8 @@ app.get('/search', (request, response, next) => {
 			quotes, totalCount, pageCount,
 			query, show, season, episodes, page,
 			showNames: await queryShowNames(),
-			showInfo: show ? await queryShowInfo(show) : undefined
+			showInfo: show ? await queryShowInfo(show) : undefined,
+			DEPLOY_INFO
 		}))
 		.catch(next);
 });
@@ -43,7 +58,7 @@ export const attachOpenAPI = async app => {
 		paths: './api/paths',
 		exposeApiDocs: false,
 		validateApiDoc: true,
-		dependencies: { showNames }
+		dependencies: { showNames, DEPLOY_INFO }
 	});
 	app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(openAPI.apiDoc));
 	app.use('/api-docs.json', (_, response) => response.send(openAPI.apiDoc));

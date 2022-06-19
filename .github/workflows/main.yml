@@ -1,4 +1,4 @@
-name: Test
+name: Test & Deploy
 
 on:
   workflow_dispatch:
@@ -35,6 +35,7 @@ jobs:
         with:
           name: coverage
           path: coverage
+
   deploy:
     needs: test
     runs-on: ubuntu-latest
