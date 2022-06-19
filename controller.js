@@ -1,9 +1,9 @@
-import client from './database.js';
+import getClient from './database.js';
 
 const stripQuote = ({ _id, ...quote }) => quote
 
 export function queryRandomQuote(){
-	return client.db('quotes').collection('quotes').aggregate([{ $sample: { size: 1 }}]).toArray()
+	return getClient().db('quotes').collection('quotes').aggregate([{ $sample: { size: 1 }}]).toArray()
 		.then(([quote]) => stripQuote(quote))
 }
 
@@ -17,7 +17,7 @@ export async function queryDBForQuote(query, show = undefined, season = undefine
 	if (season) filter.season = parseInt(season) || season;
 	if (episodes) filter.episodes = parseInt(episodes) || episodes;
 
-	return client.db('quotes').collection('quotes')
+	return getClient().db('quotes').collection('quotes')
 		.find(filter)
 		.sort({ show: 'asc', season: 'asc', episodes: 'asc', timeStamp: 'asc' })
 		.skip((page - 1) * perPage)
@@ -28,7 +28,7 @@ export async function queryDBForQuote(query, show = undefined, season = undefine
 
 			if (includeCounts) {
 				results.counts = {
-					total: await client.db('quotes').collection('quotes').countDocuments(filter)
+					total: await getClient().db('quotes').collection('quotes').countDocuments(filter)
 				};
 				results.counts.page = Math.ceil(results.counts.total / perPage);
 			}
@@ -38,11 +38,11 @@ export async function queryDBForQuote(query, show = undefined, season = undefine
 }
 
 export async function queryShowNames(){
-	return client.db('quotes').collection('quotes').distinct('show');
+	return getClient().db('quotes').collection('quotes').distinct('show');
 }
 
 export async function queryShowInfo(show){
-	return client.db('quotes').collection('quotes').aggregate([{
+	return getClient().db('quotes').collection('quotes').aggregate([{
 		$match: { show }
 	}, {
 		$group: { _id: { season: "$season", episodes: "$episodes" }}
