@@ -105,7 +105,7 @@
 		<p><%= quotes.length ? (typeof totalCount === 'undefined' ? quotes.length + '+' : totalCount) : 'No' %> quotes found</p>
 		<ul>
 			<%
-			var show;
+			var show = '';
 			for (const quote of quotes) {
 				if (show.toLowerCase() !== quote.show.toLowerCase()) {
 					show = quote.show

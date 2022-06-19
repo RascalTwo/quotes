@@ -8,14 +8,14 @@ export function queryRandomQuote(){
 }
 
 export async function queryDBForQuote(query, show = undefined, season = undefined, episodes = undefined, page = 1, perPage = 100, includeCounts = false) {
-	if (!query) return { quotes: [], ...(includeCounts ? { totalCount: 0 } : {}) };
+	if (!query) return { quotes: [], counts: { total: 0, page: 0 } };
 
 	const filter = query.length > 3
 		? { $text: { $search: `\"${query}\"` } }
 		: { text: { $regex: [...query].map(char => `[${char}]`).join(''), $options: 'i' } };
 	if (show) filter.show = new RegExp(show, 'i');
-	if (season) filter.season = parseInt(season) || season;
-	if (episodes) filter.episodes = parseInt(episodes) || episodes;
+	if (season) filter.season = +season;
+	if (episodes) filter.episodes = +episodes;
 
 	return getClient().db('quotes').collection('quotes')
 		.find(filter)

@@ -6,7 +6,6 @@ import swaggerUI from 'swagger-ui-express';
 import buildAPIDoc from './api/doc.js';
 import { queryDBForQuote, queryShowInfo, queryShowNames } from './controller.js';
 
-const PORT = process.env.PORT || 1337;
 
 const app = express();
 app.use(express.static('./public'));
