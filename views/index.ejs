@@ -7,7 +7,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Quotes Search API</title>
 		<style>
-			h1, h2, p {
+			h1, h2, p, ul {
 				text-align: center;
 			}
 
@@ -17,10 +17,29 @@
 				width: max-content;
 				margin: auto;
 			}
+
+			ul {
+				list-style: none;
+			}
+
+			.quote-item {
+				margin: 1rem 0;
+			}
+
+			.text {
+				margin-left: 1rem;
+			}
+
+			.show-name {
+				font-size: 2rem;
+				list-style: none;
+			}
 		</style>
 	</head>
 
 	<body>
+		<input type="hidden" value="<%= typeof query === 'undefined' ? '' : query %>" id="original-query" />
+
 		<h1>Quotes Search API</h1>
 		<form action="/search">
 			<fieldset>
@@ -109,14 +128,17 @@
 			for (const quote of quotes) {
 				if (show.toLowerCase() !== quote.show.toLowerCase()) {
 					show = quote.show
-					%> <li> <%= show %> </li> <%
+					%> <li class="show-name"> <%= show %> </li> <%
 				}
 				%>
-				<li>
-					S<%= quote.season %>.E<%= quote.episodes.join('-') %>
-					at <%= new Date(quote.timeStamp * 1000).toISOString().substr(11, 8); %>
+				<li class="quote-item" data-show="<%= quote.show %>" data-season="<%= quote.season %>" data-episodes="<%= JSON.stringify(quote.episodes) %>" data-timestamp="<%= quote.timeStamp %>" data-quote="<%= quote.quote %>"  >
+					<button class="previous-button" aria-label="Show Previous Quote"><</button>
+					<code class="identifier">
+						S<%= quote.season %> E<%= quote.episodes.join('-') %> at <%= new Date(quote.timeStamp * 1000).toISOString().substr(11, 8); %>
+					</code>
+					<button class="next-button" aria-label="Show Next Quote">></button>
 
-					- <%- quote.text.replace(new RegExp('(' + [...query].map(char => `[${char}]`).join('') + ')', 'ig'), '<b>$1</b>') %>
+					<div class="text"><%- quote.text.replace(new RegExp('(' + [...query].map(char => `[${char}]`).join('') + ')', 'ig'), '<b>$1</b>') %></div>
 				</li>
 			<% } %>
 		</ul>
