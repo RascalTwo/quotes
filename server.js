@@ -26,17 +26,34 @@ app.use(express.static('./public'));
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', async (_, response) => {
-	response.render('index.ejs', { quotes: [], showNames: await queryShowNames(), DEPLOY_INFO })
+	response.render('index.ejs', {
+		quotes: [],
+		showNames: await queryShowNames(),
+		counts: { total: 0, page: 0 },
+		relativeURL: '/search',
+		DEPLOY_INFO
+	})
 });
 
 app.get('/search', (request, response, next) => {
 	const { query, show = undefined, season = undefined, episodes = undefined, page = 1, perPage = 100 } = request.query;
+
+	const givenParams = Object.fromEntries(Object.entries(request.query).filter(([_, value]) => value))
+	if ('page' in givenParams && page == 1) delete givenParams.page;
+	if ('perPage' in givenParams && perPage == 100) delete givenParams.perPage;
+
+	const params = new URLSearchParams(givenParams).toString();
+	const relativeURL = request.path + (params ? '?' + params : '');
+
+	if (relativeURL !== request.url) return response.redirect(relativeURL);
+
 	return queryDBForQuote(query, show, season, episodes, +page, +perPage, true)
-		.then(async ({ quotes, totalCount, pageCount }) => response.render('index.ejs', {
-			quotes, totalCount, pageCount,
+		.then(async ({ quotes, counts }) => response.render('index.ejs', {
+			quotes, counts,
 			query, show, season, episodes, page,
 			showNames: await queryShowNames(),
 			showInfo: show ? await queryShowInfo(show) : undefined,
+			relativeURL,
 			DEPLOY_INFO
 		}))
 		.catch(next);

@@ -91,3 +91,5 @@ function handleRelativeQuoteClick(relative, { currentTarget: button }) {
 document.querySelectorAll('ul button').forEach(button =>
 	button.addEventListener('click', handleRelativeQuoteClick.bind(null, button.className.split('-')[0]))
 );
+
+document.querySelector('code a').textContent = window.location.origin + document.querySelector('code a').textContent

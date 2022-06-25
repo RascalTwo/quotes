@@ -26,16 +26,15 @@ describe('/search', () => {
   it('empty query returns nothing', () => {
     return request(app)
       .get('/search?query=')
-      .expect(200)
-      .expect('Content-Type', 'text/html; charset=utf-8')
-      .expect(/No quotes found/)
+      .expect(302)
+      .expect('Location', '/search')
   })
   it('returns quote', () => {
     return request(app)
       .get('/search?query=Test')
       .expect(200)
       .expect('Content-Type', 'text/html; charset=utf-8')
-      .expect(/1\+ quotes found/)
+      .expect(/1 quotes found/)
   })
   it('show filters out quote', () => {
     return request(app)

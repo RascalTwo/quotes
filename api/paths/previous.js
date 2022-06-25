@@ -39,7 +39,6 @@ export default function () {
 				required: true,
 				schema: {
 					type: 'integer',
-					minimum: 1,
 				}
 			},
 			{

@@ -37,7 +37,6 @@ export default function () {
 				description: 'Season number',
 				schema: {
 					type: 'integer',
-					minimum: 1,
 				}
 			},
 			{
@@ -45,8 +44,7 @@ export default function () {
 				in: 'query',
 				description: 'Episode number',
 				schema: {
-					type: 'integer',
-					minimum: 1,
+					type: 'integer'
 				}
 			},
 			{
