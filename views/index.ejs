@@ -131,7 +131,7 @@
 					%> <li class="show-name"> <%= show %> </li> <%
 				}
 				%>
-				<li class="quote-item" data-show="<%= quote.show %>" data-season="<%= quote.season %>" data-episodes="<%= JSON.stringify(quote.episodes) %>" data-timestamp="<%= quote.timeStamp %>" data-quote="<%= quote.quote %>"  >
+				<li class="quote-item" data-show="<%= quote.show %>" data-season="<%= quote.season %>" data-episodes="<%= JSON.stringify(quote.episodes) %>" data-timestamp="<%= quote.timeStamp %>" >
 					<button class="previous-button" aria-label="Show Previous Quote"><</button>
 					<code class="identifier">
 						S<%= quote.season %> E<%= quote.episodes.join('-') %> at <%= new Date(quote.timeStamp * 1000).toISOString().substr(11, 8); %>
