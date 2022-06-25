@@ -27,6 +27,7 @@ describe('/api/search', () => {
 						episodes: [1],
 						timeStamp: 54.67
 					},
+					{ show: 'Relative Show', text: 'Middle', season: 3, episodes: [9], timeStamp: 54.67 },
 					{
 						show: 'Test Show',
 						text: 'Test Quote',
@@ -114,6 +115,7 @@ describe('/api/search', () => {
 						episodes: [1],
 						timeStamp: 54.67
 					},
+					{ show: 'Relative Show', text: 'Middle', season: 3, episodes: [9], timeStamp: 54.67 },
 					{
 						show: 'Test Show',
 						text: 'Test Quote',
@@ -123,7 +125,7 @@ describe('/api/search', () => {
 					}
 				],
 				counts: {
-					total: 2,
+					total: 3,
 					page: 1
 				}
 			});
@@ -143,8 +145,8 @@ describe('/api/search', () => {
 					},
 				],
 				counts: {
-					total: 2,
-					page: 2
+					total: 3,
+					page: 3
 				}
 			});
 	});

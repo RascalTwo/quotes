@@ -10,6 +10,6 @@ it('returns random quote', async () => {
 			.expect(200)
 			.expect('Content-Type', 'application/json; charset=utf-8').then(r => r.body);
 		seen.add(quote.text)
-		if (seen.size === 2) return assert.deepEqual(seen, new Set(['Test Quote', 'Another One']));
+		if (seen.size === 5) return assert.deepEqual(seen, new Set(['Test Quote', 'Another One', 'First', 'Middle', 'Last']));
 	}
 });

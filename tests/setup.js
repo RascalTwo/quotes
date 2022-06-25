@@ -20,6 +20,9 @@ export default (app) => {
 		await collection.insertMany([
 			{ show: 'Test Show', text: 'Test Quote', season: 1, episodes: [1, 2], timeStamp: 54.18 },
 			{ show: 'Another One', text: 'Another One', season: 2, episodes: [1], timeStamp: 54.67 },
+			{ show: 'Relative Show', text: 'First', season: 3, episodes: [9], timeStamp: 45.75 },
+			{ show: 'Relative Show', text: 'Middle', season: 3, episodes: [9], timeStamp: 54.67 },
+			{ show: 'Relative Show', text: 'Last', season: 3, episodes: [9], timeStamp: 67.52 },
 		]);
 		await attachOpenAPI(app);
 		app.use(errorHandler);
