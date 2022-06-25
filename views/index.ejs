@@ -89,7 +89,7 @@
 				</datalist>
 
 				<label for="episodesInput">
-					Episodes
+					Episode
 				</label>
 				<input
 					id="episodesInput"
@@ -114,14 +114,14 @@
 					min="1"
 					type="number"
 					value="<%= typeof page === 'undefined' ? 1 : page %>"
-					max="<%= typeof pageCount === 'undefined' ? 1 : Math.max(pageCount, 1) %>"
+					max="<%= typeof counts.page === 'undefined' ? 1 : Math.max(counts.page, 1) %>"
 				/>
 
 				<button>Submit</button>
 				<button type="reset">Reset</button>
 			</fieldset>
 		</form>
-		<p><%= quotes.length ? (typeof totalCount === 'undefined' ? quotes.length + '+' : totalCount) : 'No' %> quotes found</p>
+		<p><%= quotes.length ? (typeof counts.total === 'undefined' ? quotes.length + '+' : counts.total) : 'No' %> quotes found</p>
 		<ul>
 			<%
 			var show = '';
@@ -149,7 +149,9 @@
 				<li><a href="/api-docs.json">OpenAPI JSON</a></li>
 			</ul>
 				<p>
-					Current query API Endpoint: <code>https://r2-quotes.herokuapp.com/api/search?query=<%= encodeURIComponent(locals.query) %>&show=<%= encodeURIComponent(locals.show) %>&season=<%= encodeURIComponent(locals.season) %>&episodes=<%= encodeURIComponent(locals.episodes) %>page=<%= encodeURIComponent(locals.page) %>&includeCount=true&perPage=100</code>
+					Current query API Endpoint:
+					<br/>
+					<code><a href="/api<%= relativeURL %>">/api<%= relativeURL %></a></code>
 				</p>
 			<br/>
 			<pre>Deployed Version: <%= DEPLOY_INFO %></pre>
