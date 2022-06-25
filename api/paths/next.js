@@ -38,17 +38,14 @@ export default function () {
 				description: 'Episode numbers',
 				required: true,
 				schema: {
-					type: 'array',
-					items: {
-						type: 'integer',
-						example: 9
-					}
+					type: 'integer',
+					minimum: 1,
 				}
 			},
 			{
 				name: 'timeStamp',
 				in: 'query',
-				description: 'Time stamp',
+				description: 'Time stamp in seconds',
 				required: true,
 				schema: {
 					type: 'number',

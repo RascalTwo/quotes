@@ -39,12 +39,14 @@ export default function buildAPIDoc(showNames) {
 							$ref: '#/components/schemas/ShowName'
 						},
 						season: {
-							type: 'integer'
+							type: 'integer',
+							minimum: 1,
 						},
 						episodes: {
 							type: 'array',
 							items: {
-								type: 'integer'
+								type: 'integer',
+								minimum: 1,
 							}
 						}
 					}

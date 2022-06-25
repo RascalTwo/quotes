@@ -35,20 +35,17 @@ export default function () {
 			{
 				name: 'episodes',
 				in: 'query',
-				description: 'Episode numbers',
+				description: 'Episode number',
 				required: true,
 				schema: {
-					type: 'array',
-					items: {
-						type: 'integer',
-						example: 9
-					}
+					type: 'integer',
+					minimum: 1,
 				}
 			},
 			{
 				name: 'timeStamp',
 				in: 'query',
-				description: 'Time stamp',
+				description: 'Time stamp in seconds',
 				required: true,
 				schema: {
 					type: 'number',

@@ -18,6 +18,7 @@ export default function (showNames) {
 					'application/json': {
 						schema: {
 							type: 'array',
+							example: showNames,
 							items: {
 								$ref: '#/components/schemas/ShowName'
 							}

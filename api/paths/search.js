@@ -36,16 +36,17 @@ export default function () {
 				in: 'query',
 				description: 'Season number',
 				schema: {
-					type: 'integer'
+					type: 'integer',
+					minimum: 1,
 				}
 			},
 			{
 				name: 'episodes',
 				in: 'query',
-				description: 'Episode numbers',
+				description: 'Episode number',
 				schema: {
-					type: 'string',
-					pattern: String.raw`^\d+(-\d+)*$`
+					type: 'integer',
+					minimum: 1,
 				}
 			},
 			{
