@@ -20,6 +20,7 @@
     "express": "^4.18.1",
     "express-openapi": "^12.0.0",
     "mongodb": "^4.6.0",
+    "playwright": "^1.22.2",
     "swagger-ui-express": "^4.4.0"
   },
   "devDependencies": {
