@@ -59,12 +59,14 @@ describe('frontend', function(){
 		it('previous is shown', async () => {
 			await search('query=Middle');
 			await page.click('.previous-button');
+			await page.waitForTimeout(500);
 			assert(await page.locator('li', { hasText: 'First'}).isVisible())
 		})
 
 		it('next is shown', async () => {
 			await search('query=Middle');
 			await page.click('.next-button');
+			await page.waitForTimeout(500);
 			assert(await page.locator('li', { hasText: 'Last'}).isVisible())
 		})
 
