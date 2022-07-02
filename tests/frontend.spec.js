@@ -80,4 +80,57 @@ describe('frontend', function(){
 			assert(await page.locator('.next-button').isDisabled())
 		})
 	});
+
+	describe('input datalists', () => {
+		it('show names are populated', async () => {
+			await search('');
+			assert.deepEqual(
+				await page.$eval('#showNames', datalist => [...datalist.children].map(child => child.textContent)),
+				['Another One', 'Relative Show', 'Test Show']
+			);
+		})
+
+		it('season numbers are populated', async () => {
+			await search('');
+
+			const requestedURLs = []
+			page.on('request', request => requestedURLs.push(request.url()))
+
+			await page.fill('#showInput', 'Test Show');
+			await page.click('#seasonInput');
+			assert(requestedURLs.includes('http://localhost:1337/api/show-info?show=Test%20Show'), 'network request not made')
+			requestedURLs.splice(requestedURLs.indexOf('http://localhost:1337/api/show-info?show=Test%20Show'), 1)
+			assert.deepEqual(
+				await page.$eval('#seasonList', datalist => [...datalist.children].map(child => child.textContent)),
+				['1']
+			);
+			await page.fill('#showInput', 'does not exist');
+			await page.click('#seasonInput');
+			assert(requestedURLs.includes('http://localhost:1337/api/show-info?show=does%20not%20exist'), 'network request not made')
+			requestedURLs.splice(requestedURLs.indexOf('http://localhost:1337/api/show-info?show=does%20not%20exist'), 1)
+			assert.deepEqual(
+				await page.$eval('#seasonList', datalist => [...datalist.children].map(child => child.textContent)),
+				[]
+			);
+			await page.fill('#showInput', 'Test Show');
+			await page.click('#seasonInput');
+			assert(!requestedURLs.includes('http://localhost:1337/api/show-info?show=Test%20Show'), 'network request not cached')
+			assert.deepEqual(
+				await page.$eval('#seasonList', datalist => [...datalist.children].map(child => child.textContent)),
+				['1']
+			);
+		})
+
+		it('episode numbers are populated', async () => {
+			await search('');
+			await page.type('#showInput', 'Test Show');
+			await page.click('#seasonInput');
+			await page.type('#seasonInput', '1');
+			await page.click('#episodesInput');
+			assert.deepEqual(
+				await page.$eval('#episodesList', datalist => [...datalist.children].map(child => child.textContent)),
+				['1-2']
+			);
+		})
+	});
 })
