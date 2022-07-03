@@ -10,7 +10,7 @@ export default function buildAPIDoc(titles) {
 		info: {
 			title: 'TV Show Quotes API',
 			version: '1.0.0',
-			description: 'Get quotes for TV shows'
+			description: 'Get quotes for media'
 		},
 		servers: [
 			{
