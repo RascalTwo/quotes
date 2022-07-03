@@ -2,6 +2,16 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import getClient from '../database.js';
 import { attachOpenAPI, errorHandler } from '../server.js';
 
+export async function setDatabaseData({ quotes = [], medias = [] }){
+	const db = getClient().db('quotes');
+	const mediaCollection = db.collection('medias');
+	const quotesCollection = db.collection('quotes');
+	await mediaCollection.deleteMany();
+	await quotesCollection.deleteMany();
+	if (medias.length) await mediaCollection.insertMany(medias);
+	if (quotes.length) await quotesCollection.insertMany(quotes);
+}
+
 /** @type {import('express').Application} */
 export default (app) => {
 	/** @type {MongoMemoryServer} */
@@ -15,15 +25,10 @@ export default (app) => {
 		oldURI = process.env.MONGODB_URL;
 		process.env.MONGODB_URL = mongod.getUri();
 		const client = await getClient().connect();
-		const collection = client.db('quotes').collection('quotes');
-		await collection.createIndex({ text: 'text' });
-		await collection.insertMany([
-			{ show: 'Test Show', text: 'Test Quote', season: 1, episodes: [1, 2], timeStamp: 54.18 },
-			{ show: 'Another One', text: 'Another One', season: 2, episodes: [1], timeStamp: 54.67 },
-			{ show: 'Relative Show', text: 'First', season: 3, episodes: [9], timeStamp: 45.75 },
-			{ show: 'Relative Show', text: 'Middle', season: 3, episodes: [9], timeStamp: 54.67 },
-			{ show: 'Relative Show', text: 'Last', season: 3, episodes: [9], timeStamp: 67.52 },
-		]);
+		const quotesCollection = client.db('quotes').collection('quotes');
+		await quotesCollection.createIndex({ text: 'text' });
+		await client.db('quotes').collection('medias').insertOne({ title: 'AtLeastOneMediaRequried' });
+
 		await attachOpenAPI(app);
 		app.use(errorHandler);
 	});

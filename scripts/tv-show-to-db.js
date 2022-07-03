@@ -14,10 +14,10 @@ async function parseTVShowSRTs(directory, title) {
 
 		const season = +entityName.match(/\d+/)[0]
 		for (const srtFilename of await fs.promises.readdir(entityAbsolute)) {
-			const episodes = srtFilename.match(/E\d+/ig).map(e => +e.slice(1)).join('-');
+			const episode = srtFilename.match(/E\d+/ig).map(e => +e.slice(1)).join('-');
 			const srt = (await fs.promises.readFile(path.join(entityAbsolute, srtFilename))).toString();
 
-			const media = { title, season, episodes };
+			const media = { title, season, episode };
 			medias.push(media);
 			quotes.push(...cleanupParsedSRTs(srt, media));
 		}

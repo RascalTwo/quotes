@@ -2,8 +2,8 @@ import { queryPreviousQuote } from "../../controller.js";
 
 export default function () {
 	/** @type {import("express").RequestHandler} */
-	function GET({ query: { show, season, episodes, timeStamp } }, response, next) {
-		return queryPreviousQuote({ show, season, episodes, timeStamp })
+	function GET({ query: { title, season, episode, timeStamp } }, response, next) {
+		return queryPreviousQuote({ media: { title, season, episode }, timeStamp })
 			.then(quote => response.send({ quote }))
 			.catch(next);
 	}
@@ -14,31 +14,29 @@ export default function () {
 		operationId: 'previousQuote',
 		parameters: [
 			{
-				name: 'show',
+				name: 'title',
 				in: 'query',
-				description: 'Show name',
+				description: 'Media title',
 				required: true,
 				schema: {
-					$ref: '#/components/schemas/ShowName'
+					$ref: '#/components/schemas/MediaTitle'
 				}
 			},
 			{
 				name: 'season',
 				in: 'query',
 				description: 'Season number',
-				required: true,
 				schema: {
 					type: 'integer',
 					example: 3
 				}
 			},
 			{
-				name: 'episodes',
+				name: 'episode',
 				in: 'query',
 				description: 'Episode number',
-				required: true,
 				schema: {
-					type: 'integer',
+					$ref: '#/components/schemas/EpisodeNumber'
 				}
 			},
 			{

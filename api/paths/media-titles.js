@@ -1,26 +1,26 @@
 /**
- * @param {string[]} showNames
+ * @param {string[]} titles
  */
-export default function (showNames) {
+export default function (titles) {
 	/** @type {import("express").RequestHandler} */
 	function GET(_, response) {
-		return response.send(showNames);
+		return response.send(titles);
 	}
 
 	/** @type {import("express-openapi").OperationFunction['apiDoc']} */
 	const apiDoc = {
-		summary: 'Get all show names',
-		operationId: 'showNames',
+		summary: 'Get all media titles',
+		operationId: 'titles',
 		responses: {
 			200: {
-				description: 'Show names',
+				description: 'Media titles',
 				content: {
 					'application/json': {
 						schema: {
 							type: 'array',
-							example: showNames,
+							example: titles,
 							items: {
-								$ref: '#/components/schemas/ShowName'
+								$ref: '#/components/schemas/MediaTitle'
 							}
 						}
 					}
