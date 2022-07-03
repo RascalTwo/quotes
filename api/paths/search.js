@@ -3,8 +3,8 @@ import { queryDBForQuote } from "../../controller.js";
 
 export default function () {
 	/** @type {import("express").RequestHandler} */
-	function GET({ query: { query, show, season, episodes, page, perPage, includeCounts } }, response, next) {
-		return queryDBForQuote(query, show, season, episodes, page, perPage, includeCounts)
+	function GET({ query: { query, title, season, episode, page, perPage, includeCounts } }, response, next) {
+		return queryDBForQuote(query, title, season, episode, page, perPage, includeCounts)
 			.then((payload) => response.send(payload))
 			.catch(next);
 	}
@@ -24,9 +24,9 @@ export default function () {
 				}
 			},
 			{
-				name: 'show',
+				name: 'title',
 				in: 'query',
-				description: 'Show name',
+				description: 'Media title',
 				schema: {
 					$ref: '#/components/schemas/MediaTitle'
 				}
@@ -40,11 +40,11 @@ export default function () {
 				}
 			},
 			{
-				name: 'episodes',
+				name: 'episode',
 				in: 'query',
 				description: 'Episode number',
 				schema: {
-					type: 'integer'
+					$ref: '#/components/schemas/EpisodeNumber'
 				}
 			},
 			{

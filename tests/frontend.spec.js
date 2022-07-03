@@ -6,8 +6,26 @@ import { chromium } from 'playwright';
 
 
 import app from '../server.js';
+import { setDatabaseData } from './setup.js';
 
 describe('frontend', function(){
+	before(() => setDatabaseData({
+		medias: [
+			{ _id: 'mid', title: 'Movie' },
+			{ _id: 'tv1', title: 'Show', season: 1, episode: '1' },
+			{ _id: 'tv2', title: 'Show', season: 1, episode: '2' },
+			{ _id: 'tv22', title: 'Another Show', season: 1, episode: '2' },
+		],
+		quotes: [
+			{ media: 'tv1', text: 'Episode1', timeStamp: 1.0 },
+			{ media: 'tv2', text: 'First', timeStamp: 1.0 },
+			{ media: 'tv2', text: 'Middle', timeStamp: 2.0 },
+			{ media: 'tv2', text: 'Last', timeStamp: 3.0 },
+			{ media: 'mid', text: 'Left', timeStamp: 1.0 },
+			{ media: 'mid', text: 'Center', timeStamp: 2.0 },
+			{ media: 'mid', text: 'Right', timeStamp: 3.0 },
+		]
+	}));
 
 	/** @type {import('playwright').Browser | null} */
 	let browser = null;
@@ -88,7 +106,7 @@ describe('frontend', function(){
 			await search('');
 			assert.deepEqual(
 				await page.$eval('#showNames', datalist => [...datalist.children].map(child => child.textContent)),
-				['Another One', 'Relative Show', 'Test Show']
+				['Another Show', 'Movie', 'Show']
 			);
 		})
 
@@ -98,25 +116,25 @@ describe('frontend', function(){
 			const requestedURLs = []
 			page.on('request', request => requestedURLs.push(request.url()))
 
-			await page.fill('#showInput', 'Test Show');
+			await page.fill('#showInput', 'Show');
 			await page.click('#seasonInput');
-			assert(requestedURLs.includes('http://localhost:1337/api/show-info?show=Test%20Show'), 'network request not made')
-			requestedURLs.splice(requestedURLs.indexOf('http://localhost:1337/api/show-info?show=Test%20Show'), 1)
+			assert(requestedURLs.includes('http://localhost:1337/api/media-info?title=Show'), 'network request not made')
+			requestedURLs.splice(requestedURLs.indexOf('http://localhost:1337/api/media-info?title=Show'), 1)
 			assert.deepEqual(
 				await page.$eval('#seasonList', datalist => [...datalist.children].map(child => child.textContent)),
 				['1']
 			);
 			await page.fill('#showInput', 'does not exist');
 			await page.click('#seasonInput');
-			assert(requestedURLs.includes('http://localhost:1337/api/show-info?show=does%20not%20exist'), 'network request not made')
-			requestedURLs.splice(requestedURLs.indexOf('http://localhost:1337/api/show-info?show=does%20not%20exist'), 1)
+			assert(requestedURLs.includes('http://localhost:1337/api/media-info?title=does%20not%20exist'), 'network request not made')
+			requestedURLs.splice(requestedURLs.indexOf('http://localhost:1337/api/media-info?title=does%20not%20exist'), 1)
 			assert.deepEqual(
 				await page.$eval('#seasonList', datalist => [...datalist.children].map(child => child.textContent)),
 				[]
 			);
-			await page.fill('#showInput', 'Test Show');
+			await page.fill('#showInput', 'Show');
 			await page.click('#seasonInput');
-			assert(!requestedURLs.includes('http://localhost:1337/api/show-info?show=Test%20Show'), 'network request not cached')
+			assert(!requestedURLs.includes('http://localhost:1337/api/media-info?title=Show'), 'network request not cached')
 			assert.deepEqual(
 				await page.$eval('#seasonList', datalist => [...datalist.children].map(child => child.textContent)),
 				['1']
@@ -125,13 +143,13 @@ describe('frontend', function(){
 
 		it('episode numbers are populated', async () => {
 			await search('');
-			await page.type('#showInput', 'Test Show');
+			await page.type('#showInput', 'Show');
 			await page.click('#seasonInput');
 			await page.type('#seasonInput', '1');
 			await page.click('#episodesInput');
 			assert.deepEqual(
 				await page.$eval('#episodesList', datalist => [...datalist.children].map(child => child.textContent)),
-				['1-2']
+				['1', '2']
 			);
 		})
 	});

@@ -3,6 +3,7 @@ import assert from 'assert';
 
 import app, { errorHandler } from '../server.js';
 import setup from './setup.js';
+import { setDatabaseData } from './setup.js';
 
 setup(app);
 
@@ -12,10 +13,20 @@ it('index.html returned', () => {
     .get('/')
     .expect(200)
     .expect('Content-Type', 'text/html; charset=utf-8')
-    .expect(/<option>Test Show<\/option>/);
+    .expect(/<option>AtLeastOneMediaRequried<\/option>/);
 });
 
 describe('/search', () => {
+  before(() => setDatabaseData({
+    medias: [
+      { _id: 'mid', title: 'Movie' },
+      { _id: 'tv1', title: 'Show', season: 1, episode: '2' },
+    ],
+    quotes: [
+      { media: 'tv1', text: 'One', timeStamp: 1.0 },
+      { media: 'mid', text: 'Two', timeStamp: 1.0 },
+    ]
+  }))
   it('returns nothing', () => {
     return request(app)
       .get('/search')
@@ -31,14 +42,14 @@ describe('/search', () => {
   })
   it('returns quote', () => {
     return request(app)
-      .get('/search?query=Test')
+      .get('/search?query=One')
       .expect(200)
       .expect('Content-Type', 'text/html; charset=utf-8')
       .expect(/1 quotes found/)
   })
-  it('show filters out quote', () => {
+  it('title filters out quote', () => {
     return request(app)
-      .get('/search?query=Test&show=None')
+      .get('/search?query=Test&title=None')
       .expect(200)
       .expect('Content-Type', 'text/html; charset=utf-8')
       .expect(/No quotes found/)

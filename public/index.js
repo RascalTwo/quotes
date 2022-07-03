@@ -21,9 +21,9 @@ new class ShowAutocompletes {
 	}
 
 	populateShowInfo() {
-		return fetch(`/api/show-info?show=${encodeURIComponent(this.showName)}`)
+		return fetch(`/api/media-info?title=${encodeURIComponent(this.showName)}`)
 			.then(r => r.json())
-			.then(info => this.shows[this.showName] = info)
+			.then(({ seasons }) => this.shows[this.showName] = seasons || {})
 	}
 
 	onShowInputChange({ currentTarget: { value: rawValue } }, showName = rawValue.trim()) {
@@ -42,40 +42,42 @@ new class ShowAutocompletes {
 	}
 }(showInput, seasonInput, seasonList, episodesList);
 
-const IDENTIFIER_KEYS = ['show', 'season', 'episodes', 'timeStamp'];
+const IDENTIFIER_KEYS = ['title', 'season', 'episode', 'timeStamp'];
 
 function handleRelativeQuoteClick(relative, { currentTarget: button }) {
 	button.disabled = true;
 
-	const li = button.parentElement;
+	const li = button.closest('li');
 	const quote = {
-		show: li.dataset.show,
-		season: +li.dataset.season,
-		episodes: JSON.parse(li.dataset.episodes),
+		title: li.dataset.title,
 		timeStamp: +li.dataset.timestamp
 	}
+	if (li.dataset.season) quote.season = +li.dataset.season;
+	if (li.dataset.episode) quote.episode = li.dataset.episode;
+
 	const url = new URL('/api/' + relative, window.location.origin);
-	for (const key of IDENTIFIER_KEYS) url.searchParams.set(key, quote[key]);
+	for (const key of IDENTIFIER_KEYS) if (key in quote) url.searchParams.set(key, quote[key]);
 
 	return fetch(url.toString()).then(r => r.json()).then(({ quote }) => {
 		if (quote === null) return
 
-		const alreadyExists = document.querySelector(`[data-show="${quote.show}"][data-season="${quote.season}"][data-episodes="${JSON.stringify(quote.episodes)}"][data-timestamp="${quote.timeStamp}"]`);
+		const alreadyExists = document.querySelector(`[data-show="${quote.show}"][data-season="${quote.season}"][data-episode="${quote.episode}"][data-timestamp="${quote.timeStamp}"]`);
 		if (alreadyExists) {
 			return alreadyExists.querySelector(`.${relative === 'previous' ? 'next' : 'previous'}-button`).disabled = true;
 		}
 
 		const newLI = document.createElement('li')
 		newLI.className = 'quote-item'
-		newLI.dataset.show = quote.show;
-		newLI.dataset.season = quote.season;
+		newLI.dataset.title = quote.media.title;
+		newLI.dataset.season = quote.media.season;
+		newLI.dataset.episode = quote.media.episode;
 		newLI.dataset.timestamp = quote.timeStamp;
-		newLI.dataset.episodes = JSON.stringify(quote.episodes);
 
 		newLI.innerHTML = `
 			<button class="previous-button" aria-label="Show Previous Quote" ${relative === 'next' ? 'disabled' : ''} ><</button>
 			<code class="identifier">
-				S${quote.season} E${quote.episodes.join('-')} at ${new Date(quote.timeStamp * 1000).toISOString().substr(11, 8)}
+				${quote.media.season ? `S${quote.media.season} E${quote.media.episode} at ` : ''}
+				${new Date(quote.timeStamp * 1000).toISOString().substr(11, 8)}
 			</code>
 			<button class="next-button" aria-label="Show Next Quote" ${relative === 'previous' ? 'disabled' : ''}>></button>
 			<div class="text">${quote.text.replace(new RegExp('(' + [...document.querySelector('#original-query').value].map(char => `[${char}]`).join('') + ')', 'ig'), '<b>$1</b>')}</div>
