@@ -28,7 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', async (_, response) => {
 	response.render('index.ejs', {
 		quotes: [],
-		showNames: await queryTitles(),
+		mediaTitles: await queryTitles(),
 		counts: { total: 0, page: 0 },
 		relativeURL: '/search',
 		DEPLOY_INFO

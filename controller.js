@@ -26,34 +26,62 @@ export function queryRandomQuote() {
 		.then(([quote]) => quote)
 }
 
-export async function queryDBForQuote(query, show = undefined, season = undefined, episodes = undefined, page = 1, perPage = 100, includeCounts = false) {
+export async function queryDBForQuote(query, title, season, episode, page, perPage, includeCounts) {
 	if (!query) return { quotes: [], counts: { total: 0, page: 0 } };
 
-	const filter = query.length > 3
+	const textFilter = query.length > 3
 		? { $text: { $search: `\"${query}\"` } }
 		: { text: { $regex: [...query].map(char => `[${char}]`).join(''), $options: 'i' } };
-	if (show) filter.show = new RegExp(show, 'i');
-	if (season) filter.season = +season;
-	if (episodes) filter.episodes = +episodes;
+
+	const mediaFilter = {};
+	if (title) mediaFilter['media.title'] = new RegExp(title, 'i');
+	if (season) mediaFilter['media.season'] = +season;
+	if (episode) mediaFilter['media.episode'] = episode;
 
 	return getClient().db('quotes').collection('quotes')
-		.find(filter)
-		.sort({ show: 'asc', season: 'asc', episodes: 'asc', timeStamp: 'asc' })
-		.skip((page - 1) * perPage)
-		.limit(perPage)
-		.toArray()
-		.then(async quotes => {
-			const results = { quotes: quotes.map(stripQuote) };
+		.aggregate([
+			{ $match: textFilter },
+			{
+				$lookup: {
+					from: 'medias',
+					localField: 'media',
+					foreignField: '_id',
+					as: 'media'
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					text: 1,
+					timeStamp: 1,
+					media: { $arrayElemAt: ['$media', 0] }
+				}
+			},
+			{ $match: mediaFilter },
+			{ $unset: ['media._id'] },
+			{ $sort: { 'media.title': 1, 'media.season': 1, 'media.episode': 1, timeStamp: 1 } },
+			{
+				$facet: {
+					total: [{ $count: "count" }],
+					quotes: [
+						{ $skip: perPage * (page - 1) },
+						{ $limit: perPage }]
+				}
+			},
+		]).toArray()
+		.then(async ([{ quotes, total: [rawTotal]  }]) => {
 
+			const results = { quotes };
 			if (includeCounts) {
 				results.counts = {
-					total: await getClient().db('quotes').collection('quotes').countDocuments(filter)
+					total: rawTotal?.count || 0
 				};
 				results.counts.page = Math.ceil(results.counts.total / perPage);
 			}
 
 			return results;
 		})
+
 }
 
 export async function queryTitles() {
@@ -73,9 +101,9 @@ export async function queryMediaInfo(title) {
 			seasons[season].sort((a, b) => parseInt(a) - parseInt(b));
 			return seasons;
 		}, {});
-		for (const season in seasons){
+		for (const season in seasons) {
 			const episodeNumberWidth = seasons[season].flatMap(ep => ep.split('-')).map(Number).reduce((a, b) => Math.max(a, b)).toString().length;
-			for (const index in seasons[season]){
+			for (const index in seasons[season]) {
 				const episode = seasons[season][index];
 				seasons[season][index] = episode.split('-').map(Number).map(num => num.toString().padStart(episodeNumberWidth, '0')).join('-');
 			}

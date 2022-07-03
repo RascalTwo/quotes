@@ -67,7 +67,7 @@
 					value="<%= typeof show === 'undefined' ? '' : show %>"
 				/>
 				<datalist id="showNames">
-					<% for (const showName of showNames) { %>
+					<% for (const showName of mediaTitles) { %>
 						<option><%= showName %></option>
 					<% } %>
 				</datalist>
@@ -125,17 +125,20 @@
 		<p><%= quotes.length ? (typeof counts.total === 'undefined' ? quotes.length + '+' : counts.total) : 'No' %> quotes found</p>
 		<ul>
 			<%
-			var show = '';
+			var title = '';
 			for (const quote of quotes) {
-				if (show.toLowerCase() !== quote.show.toLowerCase()) {
-					show = quote.show
-					%> <li class="show-name"> <%= show %> </li> <%
+				if (title.toLowerCase() !== quote.media.title.toLowerCase()) {
+					title = quote.media.title
+					%> <li class="show-name"> <%= title %> </li> <%
 				}
 				%>
-				<li class="quote-item" data-show="<%= quote.show %>" data-season="<%= quote.season %>" data-episodes="<%= JSON.stringify(quote.episodes) %>" data-timestamp="<%= quote.timeStamp %>" >
+				<li class="quote-item" data-title="<%= quote.media.title %>" data-season="<%= quote.media.season %>" data-episode="<%= quote.media.episode %>" data-timestamp="<%= quote.timeStamp %>" >
 					<button class="previous-button" aria-label="Show Previous Quote"><</button>
 					<code class="identifier">
-						S<%= quote.season %> E<%= quote.episodes.join('-') %> at <%= new Date(quote.timeStamp * 1000).toISOString().substr(11, 8); %>
+						<% if (quote.media.season) { %>
+							S<%= quote.media.season %> E<%= quote.media.episode %> at
+						<% } %>
+						<%= new Date(quote.timeStamp * 1000).toISOString().substr(11, 8); %>
 					</code>
 					<button class="next-button" aria-label="Show Next Quote">></button>
 
