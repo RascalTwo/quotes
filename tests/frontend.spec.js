@@ -34,7 +34,7 @@ describe('frontend', function(){
 	/** @type {Server | null} */
 	let server = null;
 	beforeEach(async () => {
-		browser = await chromium.launch({ headless: !!process.env.CI });
+		browser = await chromium.launch();
 		const context = await browser.newContext();
 		page = await context.newPage();
 		await page.coverage?.startJSCoverage();
