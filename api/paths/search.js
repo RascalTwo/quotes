@@ -28,7 +28,7 @@ export default function () {
 				in: 'query',
 				description: 'Show name',
 				schema: {
-					$ref: '#/components/schemas/ShowName'
+					$ref: '#/components/schemas/MediaTitle'
 				}
 			},
 			{

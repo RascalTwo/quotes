@@ -4,7 +4,7 @@ import { initialize } from 'express-openapi';
 import swaggerUI from 'swagger-ui-express';
 
 import buildAPIDoc from './api/doc.js';
-import { queryDBForQuote, queryShowInfo, queryShowNames } from './controller.js';
+import { queryDBForQuote, queryMediaInfo, queryTitles } from './controller.js';
 import { execSync } from 'child_process';
 
 
@@ -28,7 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', async (_, response) => {
 	response.render('index.ejs', {
 		quotes: [],
-		showNames: await queryShowNames(),
+		showNames: await queryTitles(),
 		counts: { total: 0, page: 0 },
 		relativeURL: '/search',
 		DEPLOY_INFO
@@ -51,8 +51,8 @@ app.get('/search', (request, response, next) => {
 		.then(async ({ quotes, counts }) => response.render('index.ejs', {
 			quotes, counts,
 			query, show, season, episodes, page,
-			showNames: await queryShowNames(),
-			showInfo: show ? await queryShowInfo(show) : undefined,
+			mediaTitles: await queryTitles(),
+			mediaInfo: show ? await queryMediaInfo(show) : undefined,
 			relativeURL,
 			DEPLOY_INFO
 		}))
@@ -68,14 +68,14 @@ export const errorHandler = (error, _, response, next) => {
  * @param {import('express').Application} app
  */
 export const attachOpenAPI = async app => {
-	const showNames = await queryShowNames();
+	const titles = await queryTitles();
 	const openAPI = await initialize({
 		app,
-		apiDoc: buildAPIDoc(showNames),
+		apiDoc: buildAPIDoc(titles),
 		paths: './api/paths',
 		exposeApiDocs: false,
 		validateApiDoc: true,
-		dependencies: { showNames, DEPLOY_INFO }
+		dependencies: { titles, DEPLOY_INFO }
 	});
 	app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(openAPI.apiDoc));
 	app.use('/api-docs.json', (_, response) => response.send(openAPI.apiDoc));

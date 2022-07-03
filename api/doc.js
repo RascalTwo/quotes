@@ -1,10 +1,10 @@
 import cors from 'cors';
 
 /**
- * @param {string[]} showNames
+ * @param {string[]} titles
  * @returns {import("express-openapi").ExpressOpenAPIArgs['apiDoc']}
  */
-export default function buildAPIDoc(showNames) {
+export default function buildAPIDoc(titles) {
 	return {
 		openapi: '3.0.0',
 		info: {
@@ -24,31 +24,44 @@ export default function buildAPIDoc(showNames) {
 		],
 		components: {
 			schemas: {
-				ShowName: {
+				MediaTitle: {
 					type: 'string',
-					enum: showNames
+					enum: titles
 				},
-				Quote: {
-					description: 'A quote',
+				EpisodeNumber: {
+					type: 'string',
+					pattern: String.raw`^\d+(-\d+)?$`
+				},
+				Media: {
 					type: 'object',
+					required: ['title', '_id'],
 					properties: {
-						quote: {
-							type: 'string'
+						_id: {
+							type: 'string',
+							description: 'Unique identifier for the media'
 						},
-						show: {
-							$ref: '#/components/schemas/ShowName'
+						title: {
+							$ref: '#/components/schemas/MediaTitle'
 						},
 						season: {
 							type: 'integer',
 							minimum: 1,
 						},
-						episodes: {
-							type: 'array',
-							items: {
-								type: 'integer',
-								minimum: 1,
-							}
+						episode: {
+							$ref: '#/components/schemas/EpisodeNumber'
 						}
+					}
+				},
+				Quote: {
+					description: 'A quote',
+					type: 'object',
+					properties: {
+						text: {
+							type: 'string'
+						},
+						media: {
+							$ref: '#/components/schemas/Media'
+						},
 					}
 				}
 			}
