@@ -102,10 +102,10 @@ describe('frontend', function(){
 	});
 
 	describe('input datalists', () => {
-		it('show names are populated', async () => {
+		it('media titles are populated', async () => {
 			await search('');
 			assert.deepEqual(
-				await page.$eval('#showNames', datalist => [...datalist.children].map(child => child.textContent)),
+				await page.$eval('#mediaTitles', datalist => [...datalist.children].map(child => child.textContent)),
 				['Another Show', 'Movie', 'Show']
 			);
 		})
@@ -116,7 +116,7 @@ describe('frontend', function(){
 			const requestedURLs = []
 			page.on('request', request => requestedURLs.push(request.url()))
 
-			await page.fill('#showInput', 'Show');
+			await page.fill('#mediaTitleInput', 'Show');
 			await page.click('#seasonInput');
 			assert(requestedURLs.includes('http://localhost:1337/api/media-info?title=Show'), 'network request not made')
 			requestedURLs.splice(requestedURLs.indexOf('http://localhost:1337/api/media-info?title=Show'), 1)
@@ -124,7 +124,7 @@ describe('frontend', function(){
 				await page.$eval('#seasonList', datalist => [...datalist.children].map(child => child.textContent)),
 				['1']
 			);
-			await page.fill('#showInput', 'does not exist');
+			await page.fill('#mediaTitleInput', 'does not exist');
 			await page.click('#seasonInput');
 			assert(requestedURLs.includes('http://localhost:1337/api/media-info?title=does%20not%20exist'), 'network request not made')
 			requestedURLs.splice(requestedURLs.indexOf('http://localhost:1337/api/media-info?title=does%20not%20exist'), 1)
@@ -132,7 +132,7 @@ describe('frontend', function(){
 				await page.$eval('#seasonList', datalist => [...datalist.children].map(child => child.textContent)),
 				[]
 			);
-			await page.fill('#showInput', 'Show');
+			await page.fill('#mediaTitleInput', 'Show');
 			await page.click('#seasonInput');
 			assert(!requestedURLs.includes('http://localhost:1337/api/media-info?title=Show'), 'network request not cached')
 			assert.deepEqual(
@@ -143,7 +143,7 @@ describe('frontend', function(){
 
 		it('episode numbers are populated', async () => {
 			await search('');
-			await page.type('#showInput', 'Show');
+			await page.type('#mediaTitleInput', 'Show');
 			await page.click('#seasonInput');
 			await page.type('#seasonInput', '1');
 			await page.click('#episodesInput');

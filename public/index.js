@@ -1,12 +1,12 @@
-new class ShowAutocompletes {
-	constructor(showInput, seasonInput, seasonList, episodesList) {
+new class MediaAutocompletes {
+	constructor(mediaTitleInput, seasonInput, seasonList, episodesList) {
 		this.seasonList = seasonList
 		this.episodesList = episodesList
 
-		this.shows = {};
-		this.showName = showInput.value;
+		this.media = {};
+		this.mediaTitle = mediaTitleInput.value;
 
-		showInput.addEventListener('change', this.onShowInputChange.bind(this))
+		mediaTitleInput.addEventListener('change', this.onMovieTitleInputChange.bind(this))
 		seasonInput.addEventListener('change', this.onSeasonInputChange.bind(this))
 	}
 
@@ -21,26 +21,26 @@ new class ShowAutocompletes {
 	}
 
 	populateShowInfo() {
-		return fetch(`/api/media-info?title=${encodeURIComponent(this.showName)}`)
+		return fetch(`/api/media-info?title=${encodeURIComponent(this.mediaTitle)}`)
 			.then(r => r.json())
-			.then(({ seasons }) => this.shows[this.showName] = seasons || {})
+			.then(({ seasons }) => this.media[this.mediaTitle] = seasons || {})
 	}
 
-	onShowInputChange({ currentTarget: { value: rawValue } }, showName = rawValue.trim()) {
-		this.showName = showName;
-		if (!this.showName) return;
+	onMovieTitleInputChange({ currentTarget: { value: rawValue } }, mediaTitle = rawValue.trim()) {
+		this.mediaTitle = mediaTitle;
+		if (!this.mediaTitle) return;
 
 		return (
-			this.showName in this.shows ? Promise.resolve() : this.populateShowInfo()
-		).then(() => this.renderDatalist(this.seasonList, Object.keys(this.shows[this.showName])));
+			this.mediaTitle in this.media ? Promise.resolve() : this.populateShowInfo()
+		).then(() => this.renderDatalist(this.seasonList, Object.keys(this.media[this.mediaTitle])));
 	}
 
 	async onSeasonInputChange({ currentTarget: { value: rawValue } }, season = rawValue.trim()) {
-		if (!(this.showName in this.shows)) await this.populateShowInfo()
+		if (!(this.mediaTitle in this.media)) await this.populateShowInfo()
 
-		if (season) this.renderDatalist(this.episodesList, this.shows[this.showName]?.[season] || []);
+		if (season) this.renderDatalist(this.episodesList, this.media[this.mediaTitle]?.[season] || []);
 	}
-}(showInput, seasonInput, seasonList, episodesList);
+}(mediaTitleInput, seasonInput, seasonList, episodesList);
 
 const IDENTIFIER_KEYS = ['title', 'season', 'episode', 'timeStamp'];
 
@@ -61,7 +61,7 @@ function handleRelativeQuoteClick(relative, { currentTarget: button }) {
 	return fetch(url.toString()).then(r => r.json()).then(({ quote }) => {
 		if (quote === null) return
 
-		const alreadyExists = document.querySelector(`[data-show="${quote.show}"][data-season="${quote.season}"][data-episode="${quote.episode}"][data-timestamp="${quote.timeStamp}"]`);
+		const alreadyExists = document.querySelector(`[data-title="${quote.media.title}"][data-season="${quote.season}"][data-episode="${quote.episode}"][data-timestamp="${quote.timeStamp}"]`);
 		if (alreadyExists) {
 			return alreadyExists.querySelector(`.${relative === 'previous' ? 'next' : 'previous'}-button`).disabled = true;
 		}

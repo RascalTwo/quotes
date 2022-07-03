@@ -31,7 +31,7 @@
 				margin-left: 1rem;
 			}
 
-			.show-name {
+			.media-title {
 				font-size: 2rem;
 				list-style: none;
 			}
@@ -56,19 +56,19 @@
 					value="<%= typeof query === 'undefined' ? '' : query %>"
 				/>
 
-				<label for="showInput">
-					Show
+				<label for="mediaTitleInput">
+					Title
 				</label>
 				<input
-					id="showInput"
-					name="show"
-					list="showNames"
+					id="mediaTitleInput"
+					name="title"
+					list="mediaTitles"
 					autocomplete="off"
-					value="<%= typeof show === 'undefined' ? '' : show %>"
+					value="<%= typeof title === 'undefined' ? '' : title %>"
 				/>
-				<datalist id="showNames">
-					<% for (const showName of mediaTitles) { %>
-						<option><%= showName %></option>
+				<datalist id="mediaTitles">
+					<% for (const mediaTitle of mediaTitles) { %>
+						<option><%= mediaTitle %></option>
 					<% } %>
 				</datalist>
 
@@ -84,7 +84,7 @@
 					min="1"
 				/>
 				<datalist id="seasonList">
-					<% for (const number in (typeof showInfo === 'undefined' ? {} : showInfo)) { %>
+					<% for (const number in (typeof mediaInfo === 'undefined' ? {} : mediaInfo)) { %>
 						<option><%= number %></option>
 					<% } %>
 				</datalist>
@@ -101,7 +101,7 @@
 					min="1"
 				/>
 				<datalist id="episodesList">
-					<% for (const number of (typeof showInfo === 'undefined' ? {} : showInfo)[typeof season === 'undefined' ? undefined : season] || []) { %>
+					<% for (const number of (typeof mediaInfo === 'undefined' ? {} : mediaInfo)[typeof season === 'undefined' ? undefined : season] || []) { %>
 						<option><%= number %></option>
 					<% } %>
 				</datalist>
@@ -129,7 +129,7 @@
 			for (const quote of quotes) {
 				if (title.toLowerCase() !== quote.media.title.toLowerCase()) {
 					title = quote.media.title
-					%> <li class="show-name"> <%= title %> </li> <%
+					%> <li class="media-title"> <%= title %> </li> <%
 				}
 				%>
 				<li class="quote-item" data-title="<%= quote.media.title %>" data-season="<%= quote.media.season %>" data-episode="<%= quote.media.episode %>" data-timestamp="<%= quote.timeStamp %>" >

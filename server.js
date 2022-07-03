@@ -36,7 +36,7 @@ app.get('/', async (_, response) => {
 });
 
 app.get('/search', (request, response, next) => {
-	const { query, show = undefined, season = undefined, episodes = undefined, page = 1, perPage = 100 } = request.query;
+	const { query, title = undefined, season = undefined, episodes = undefined, page = 1, perPage = 100 } = request.query;
 
 	const givenParams = Object.fromEntries(Object.entries(request.query).filter(([_, value]) => value))
 	if ('page' in givenParams && page == 1) delete givenParams.page;
@@ -47,12 +47,12 @@ app.get('/search', (request, response, next) => {
 
 	if (relativeURL !== request.url) return response.redirect(relativeURL);
 
-	return queryDBForQuote(query, show, season, episodes, +page, +perPage, true)
+	return queryDBForQuote(query, title, season, episodes, +page, +perPage, true)
 		.then(async ({ quotes, counts }) => response.render('index.ejs', {
 			quotes, counts,
-			query, show, season, episodes, page,
+			query, title, season, episodes, page,
 			mediaTitles: await queryTitles(),
-			mediaInfo: show ? await queryMediaInfo(show) : undefined,
+			mediaInfo: title ? await queryMediaInfo(title) : undefined,
 			relativeURL,
 			DEPLOY_INFO
 		}))
