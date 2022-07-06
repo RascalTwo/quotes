@@ -1,4 +1,4 @@
-# [Quotes API](https://r2-quotes.herokuapp.com)
+# [Media Quotes API](https://r2-quotes.herokuapp.com)
 
 [![OpenAPI Valid](https://validator.swagger.io/validator?url=https://r2-quotes.herokuapp.com/api-docs.json)](https://r2-quotes.herokuapp.com/api-docs.json)
 [![Website](https://img.shields.io/website?url=https://r2-quotes.herokuapp.com&label=Website)](https://r2-quotes.herokuapp.com)
@@ -37,11 +37,15 @@ Defined as an [OpenAPI](https://r2-quotes.herokuapp.com/api-docs.json), for easy
 
 **Tech used:** HTML, CSS, JavaScript, [Express](https://expressjs.com/), [Node.js](https://nodejs.org/en/), [OpenAPI](https://oai.github.io/Documentation/specification.html), [EJS](https://ejs.co/), [Mocha](https://mochajs.org/), [C8](https://www.npmjs.com/package/c8), [MongoDB](https://www.mongodb.com/docs/drivers/node/current/), [Playwright](https://playwright.dev/)
 
-Powered by captions of your favorite TV Shows & Movies, uploaded into the database in an easily searchable manner, exposed both as a basic [EJS](https://ejs.co/) frontend allowing for the searching of quotes by query, title, and media fields.
+Powered by captions of your favorite TV Shows & Movies, uploaded into the database in an easily searchable manner, exposed both as a basic [EJS](https://ejs.co/) frontend allowing for the searching of media quotes by query, title, and media fields.
 
 Exposed as an OpenAPI via [`express-openapi`](https://www.npmjs.com/package/express-openapi) with a Swagger UI via [`swagger-ui-express`](https://www.npmjs.com/package/swagger-ui-express), allowing for easy usage and experimentation.
 
 With a near 100% test coverage provided by [`mocha`](https://mochajs.org/), [`c8`](https://www.npmjs.com/package/c8), and frontend coverage via [`playwright`](https://playwright.dev/).
+
+### Deployment
+
+Combining [GitHub Actions](https://github.com/RascalTwo/quotes/blob/main/.github/workflows/main.yml) with my tests and Heroku, the API is guaranteed to always be stable and working at all times.
 
 ## Optimizations
 
