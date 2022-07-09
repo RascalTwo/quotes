@@ -87,6 +87,7 @@ function handleRelativeQuoteClick(relative, { currentTarget: button }) {
 		);
 
 		li.parentElement.insertBefore(newLI, relative === 'previous' ? li : li.nextElementSibling);
+		newLI.querySelector(`.${relative}-button`).focus();
 	});
 }
 

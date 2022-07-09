@@ -54,7 +54,7 @@ describe('frontend', function(){
 
 	it('page loads', async () => {
 		await page.goto('http://localhost:1337/');
-		assert.deepEqual(await page.title(), 'Quotes Search API');
+		assert.deepEqual(await page.title(), 'Media Quotes API');
 	});
 
 	const search = (queryParams) => page.goto('http://localhost:1337/search?' + queryParams);
@@ -79,6 +79,7 @@ describe('frontend', function(){
 			await page.click('.previous-button');
 			await page.waitForTimeout(500);
 			assert(await page.locator('li', { hasText: 'First'}).isVisible())
+			assert(await page.$eval(".previous-button", (el) => el === document.activeElement))
 		})
 
 		it('next is shown', async () => {
@@ -86,6 +87,7 @@ describe('frontend', function(){
 			await page.click('.next-button');
 			await page.waitForTimeout(500);
 			assert(await page.locator('li', { hasText: 'Last'}).isVisible())
+			assert(await page.evaluate(() => document.querySelectorAll(".next-button")[1] === document.activeElement));
 		})
 
 		it('quote has no previous', async () => {
@@ -118,6 +120,7 @@ describe('frontend', function(){
 
 			await page.fill('#mediaTitleInput', 'Show');
 			await page.click('#seasonInput');
+			await page.waitForTimeout(100);
 			assert(requestedURLs.includes('http://localhost:1337/api/media-info?title=Show'), 'network request not made')
 			requestedURLs.splice(requestedURLs.indexOf('http://localhost:1337/api/media-info?title=Show'), 1)
 			assert.deepEqual(
@@ -126,6 +129,7 @@ describe('frontend', function(){
 			);
 			await page.fill('#mediaTitleInput', 'does not exist');
 			await page.click('#seasonInput');
+			await page.waitForTimeout(100);
 			assert(requestedURLs.includes('http://localhost:1337/api/media-info?title=does%20not%20exist'), 'network request not made')
 			requestedURLs.splice(requestedURLs.indexOf('http://localhost:1337/api/media-info?title=does%20not%20exist'), 1)
 			assert.deepEqual(
@@ -134,6 +138,7 @@ describe('frontend', function(){
 			);
 			await page.fill('#mediaTitleInput', 'Show');
 			await page.click('#seasonInput');
+			await page.waitForTimeout(100);
 			assert(!requestedURLs.includes('http://localhost:1337/api/media-info?title=Show'), 'network request not cached')
 			assert.deepEqual(
 				await page.$eval('#seasonList', datalist => [...datalist.children].map(child => child.textContent)),
