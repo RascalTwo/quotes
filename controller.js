@@ -185,3 +185,11 @@ export async function queryNextQuote({ media, timeStamp }) {
 			}
 		]).toArray().then(([quote]) => quote || null);
 }
+
+export async function queryCounts(){
+	const db = getClient().db('quotes')
+	return {
+		medias: await db.collection('medias').countDocuments(),
+		quotes: await db.collection('quotes').countDocuments()
+	};
+}
