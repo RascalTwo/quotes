@@ -44,11 +44,9 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2.3.4
+      - name: Deploy to Heroku
+        uses: AkhileshNS/heroku-deploy@v3.12.12
         with:
-          fetch-depth: 1
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: deploy
-          force: true
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "r2-quotes"
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
