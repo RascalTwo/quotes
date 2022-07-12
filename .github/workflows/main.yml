@@ -30,6 +30,17 @@ jobs:
         run: |
           npm install
           npm run coverage
+      - name: Code Coverage Summary
+        uses: irongut/CodeCoverageSummary@v1.2.0
+        with:
+          filename: coverage/cobertura-coverage.xml
+          output: both
+          badge: true
+          format: markdown
+          indicators: true
+      - name: Move coverage markdown into directory
+        run: |
+          mv code-coverage-results.md coverage
       - name: Upload test coverage
         uses: actions/upload-artifact@v1
         with:
