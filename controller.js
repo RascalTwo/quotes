@@ -116,28 +116,36 @@ export async function queryPreviousQuote({ media, timeStamp }) {
 	if (media.season === undefined) delete media.season;
 	if (media.episode === undefined) delete media.episode;
 
-	return getClient().db('quotes').collection('quotes')
+	return getClient().db('quotes').collection('medias')
 		.aggregate([
+			{ $match: media },
 			{
 				$lookup: {
-					from: 'medias',
-					localField: 'media',
-					foreignField: '_id',
-					as: 'media'
+					from: 'quotes',
+					localField: '_id',
+					foreignField: 'media',
+					as: 'quotes',
+					pipeline: [
+						{ $match: { timeStamp: { $lt: timeStamp } } },
+						{ $sort: { timeStamp: -1 } },
+						{ $limit: 1 },
+						{ $unset: '_id' }
+					]
 				},
 			},
+			{ $unwind: '$quotes' },
 			{
 				$project: {
 					_id: 0,
-					text: 1,
-					timeStamp: 1,
-					media: { $arrayElemAt: ['$media', 0] }
+					text: '$quotes.text',
+					timeStamp: '$quotes.timeStamp',
+					media: {
+						title: '$title',
+						season: '$season',
+						episode: '$episode'
+					}
 				}
-			},
-			{ $unset: ['media._id'] },
-			{ $match: { media, timeStamp: { $lt: timeStamp } } },
-			{ $sort: { timeStamp: -1 } },
-			{ $limit: 1 },
+			}
 		]).toArray().then(([quote]) => quote || null);
 }
 
@@ -145,27 +153,35 @@ export async function queryNextQuote({ media, timeStamp }) {
 	if (media.season === undefined) delete media.season;
 	if (media.episode === undefined) delete media.episode;
 
-	return getClient().db('quotes').collection('quotes')
+	return getClient().db('quotes').collection('medias')
 		.aggregate([
+			{ $match: media },
 			{
 				$lookup: {
-					from: 'medias',
-					localField: 'media',
-					foreignField: '_id',
-					as: 'media'
+					from: 'quotes',
+					localField: '_id',
+					foreignField: 'media',
+					as: 'quotes',
+					pipeline: [
+						{ $match: { timeStamp: { $gt: timeStamp } } },
+						{ $sort: { timeStamp: 1 } },
+						{ $limit: 1 },
+						{ $unset: '_id' }
+					]
 				},
 			},
+			{ $unwind: '$quotes' },
 			{
 				$project: {
 					_id: 0,
-					text: 1,
-					timeStamp: 1,
-					media: { $arrayElemAt: ['$media', 0] }
+					text: '$quotes.text',
+					timeStamp: '$quotes.timeStamp',
+					media: {
+						title: '$title',
+						season: '$season',
+						episode: '$episode'
+					}
 				}
-			},
-			{ $unset: ['media._id'] },
-			{ $match: { media, timeStamp: { $gt: timeStamp } } },
-			{ $sort: { timeStamp: 1 } },
-			{ $limit: 1 },
+			}
 		]).toArray().then(([quote]) => quote || null);
 }
