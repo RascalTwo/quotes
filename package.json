@@ -8,7 +8,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "mocha tests/*spec.js",
-    "coverage": "c8 --reporter=html mocha tests/*spec.js",
+    "coverage": "c8 --reporter=html --reporter=cobertura mocha tests/*spec.js",
     "coverage-watch": "nodemon --exec c8 --reporter=html --reporter=lcov mocha tests/*spec.js"
   },
   "author": "",
