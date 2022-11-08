@@ -1,8 +1,8 @@
 import request from 'supertest';
 import assert from 'assert';
 
-import app from '../server.js';
-import { setDatabaseData } from './setup.js';
+import app from '../server';
+import { setDatabaseData } from './setup';
 
 describe('random', () => {
 	const texts = ['abc', 'def', 'ghi'];

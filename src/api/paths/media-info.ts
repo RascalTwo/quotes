@@ -1,14 +1,16 @@
-import { queryMediaInfo } from "../../controller.js";
+import { queryMediaInfo } from "../../controller";
+
+import type { OperationFunction } from "express-openapi";
+import type { OpenAPIRequestHandler } from "../../types";
 
 
 export default function () {
-	/** @type {import("express").RequestHandler} */
-	function GET({ query: { title } }, response, next) {
+	const GET: OpenAPIRequestHandler = ({ query: { title } }, response, next) => {
+		// @ts-ignore
 		return queryMediaInfo(title).then(mediaInfo => response.json(mediaInfo)).catch(next)
 	}
 
-	/** @type {import("express-openapi").OperationFunction['apiDoc']} */
-	const apiDoc = {
+	const apiDoc: OperationFunction['apiDoc'] = {
 		summary: 'Get information on media',
 		operationId: 'mediaInfo',
 		parameters: [

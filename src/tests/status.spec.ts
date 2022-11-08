@@ -1,7 +1,7 @@
 import assert from 'assert'
 import request from 'supertest';
-import app from '../server.js';
-import { setDatabaseData } from './setup.js';
+import app from '../server';
+import { setDatabaseData } from './setup';
 
 describe('/api/status', () => {
 	before(() => setDatabaseData({

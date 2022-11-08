@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-import app from '../server.js';
+import app from '../server';
 
 describe('media-titles', () => {
 	it('returns media titles', async () => {

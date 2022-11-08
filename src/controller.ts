@@ -1,6 +1,6 @@
-import getClient from './database.js';
+import getClient from './database';
 
-const stripQuote = ({ _id, ...quote }) => quote
+const stripQuote = ({ _id, ...quote }: { _id: any }) => quote
 
 export function queryRandomQuote() {
 	return getClient().db('quotes').collection('quotes').aggregate([
@@ -26,14 +26,14 @@ export function queryRandomQuote() {
 		.then(([quote]) => quote)
 }
 
-export async function queryDBForQuote(query, title, season, episode, page, perPage, includeCounts) {
+export async function queryDBForQuote(query: string, title: string | undefined, season: number | undefined, episode: string | undefined, page: number, perPage: number, includeCounts: boolean) {
 	if (!query) return { quotes: [], counts: { total: 0, page: 0 } };
 
 	const textFilter = query.length > 3
 		? { $text: { $search: `\"${query}\"` } }
 		: { text: { $regex: [...query].map(char => `[${char}]`).join(''), $options: 'i' } };
 
-	const mediaFilter = {};
+	const mediaFilter: Record<string, RegExp | number | string> = {};
 	if (title) mediaFilter['media.title'] = new RegExp(title, 'i');
 	if (season) mediaFilter['media.season'] = +season;
 	if (episode) mediaFilter['media.episode'] = episode;
@@ -71,12 +71,19 @@ export async function queryDBForQuote(query, title, season, episode, page, perPa
 		]).toArray()
 		.then(async ([{ quotes, total: [rawTotal]  }]) => {
 
-			const results = { quotes };
+			const results: {
+				quotes: any[],
+				counts?: {
+					total: number,
+					page: number
+				}
+			} = { quotes };
 			if (includeCounts) {
+				const total = rawTotal?.count || 0;
 				results.counts = {
-					total: rawTotal?.count || 0
+					total,
+					page: Math.ceil(total / perPage)
 				};
-				results.counts.page = Math.ceil(results.counts.total / perPage);
 			}
 
 			return results;
@@ -88,7 +95,7 @@ export async function queryTitles() {
 	return getClient().db('quotes').collection('medias').distinct('title');
 }
 
-export async function queryMediaInfo(title) {
+export async function queryMediaInfo(title: string) {
 	return getClient().db('quotes').collection('medias').aggregate([
 		{ $match: { title }, },
 		{ $unset: ['_id', 'title'] },
@@ -98,21 +105,26 @@ export async function queryMediaInfo(title) {
 			if (!season) return seasons;
 			if (!(season in seasons)) seasons[season] = [];
 			seasons[season].push(episode);
-			seasons[season].sort((a, b) => parseInt(a) - parseInt(b));
+			seasons[season].sort((a: string, b: string) => parseInt(a) - parseInt(b));
 			return seasons;
 		}, {});
 		for (const season in seasons) {
-			const episodeNumberWidth = seasons[season].flatMap(ep => ep.split('-')).map(Number).reduce((a, b) => Math.max(a, b)).toString().length;
+			const episodeNumberWidth = seasons[season].flatMap((ep: string) => ep.split('-')).map(Number).reduce((a: number, b: number) => Math.max(a, b)).toString().length;
 			for (const index in seasons[season]) {
 				const episode = seasons[season][index];
-				seasons[season][index] = episode.split('-').map(Number).map(num => num.toString().padStart(episodeNumberWidth, '0')).join('-');
+				seasons[season][index] = episode.split('-').map(Number).map((num: number) => num.toString().padStart(episodeNumberWidth, '0')).join('-');
 			}
 		}
 		return Object.keys(seasons).length > 0 ? { title, seasons } : { title };
 	});
 }
 
-export async function queryPreviousQuote({ media, timeStamp }) {
+interface RelativeQueryOptions {
+	media: { title?: string, season?: number, episode?: string },
+	timeStamp?: number
+}
+
+export async function queryPreviousQuote({ media, timeStamp }: RelativeQueryOptions) {
 	if (media.season === undefined) delete media.season;
 	if (media.episode === undefined) delete media.episode;
 
@@ -149,7 +161,7 @@ export async function queryPreviousQuote({ media, timeStamp }) {
 		]).toArray().then(([quote]) => quote || null);
 }
 
-export async function queryNextQuote({ media, timeStamp }) {
+export async function queryNextQuote({ media, timeStamp }: RelativeQueryOptions) {
 	if (media.season === undefined) delete media.season;
 	if (media.episode === undefined) delete media.episode;
 

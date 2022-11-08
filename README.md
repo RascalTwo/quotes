@@ -35,7 +35,7 @@ Defined as an [OpenAPI](https://r2-quotes.herokuapp.com/api-docs.json), for easy
 
 ## How It's Made
 
-**Tech used:** HTML, CSS, JavaScript, [Express](https://expressjs.com/), [Node.js](https://nodejs.org/en/), [OpenAPI](https://oai.github.io/Documentation/specification.html), [EJS](https://ejs.co/), [Mocha](https://mochajs.org/), [C8](https://www.npmjs.com/package/c8), [MongoDB](https://www.mongodb.com/docs/drivers/node/current/), [Playwright](https://playwright.dev/)
+**Tech used:** HTML, CSS, JavaScript, TypeScript, [Express](https://expressjs.com/), [Node.js](https://nodejs.org/en/), [OpenAPI](https://oai.github.io/Documentation/specification.html), [EJS](https://ejs.co/), [Mocha](https://mochajs.org/), [C8](https://www.npmjs.com/package/c8), [MongoDB](https://www.mongodb.com/docs/drivers/node/current/), [Playwright](https://playwright.dev/)
 
 Powered by captions of your favorite TV Shows & Movies, uploaded into the database in an easily searchable manner, exposed both as a basic [EJS](https://ejs.co/) frontend allowing for the searching of media quotes by query, title, and media fields.
 

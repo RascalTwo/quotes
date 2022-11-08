@@ -1,6 +1,6 @@
 
-import app, { attachOpenAPI, errorHandler } from './server.js';
-import getClient from './database.js';
+import app, { attachOpenAPI, errorHandler } from './server';
+import getClient from './database';
 
 const PORT = process.env.PORT || 1337;
 

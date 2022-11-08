@@ -1,9 +1,10 @@
 import request from 'supertest';
 import assert from 'assert';
 
-import app, { errorHandler } from '../server.js';
-import setup from './setup.js';
-import { setDatabaseData } from './setup.js';
+import app, { errorHandler } from '../server';
+import setup, { setDatabaseData } from './setup';
+
+import type { Request, Response } from 'express';
 
 setup(app);
 
@@ -59,14 +60,14 @@ describe('/search', () => {
 describe('global error handler', () => {
   it('passes along normal errors', (done) => {
     const error = new Error('my error')
-    errorHandler(error, {}, {}, err => {
+    errorHandler(error, {} as Request, {} as Response, err => {
       assert.deepEqual(err, error)
       done()
     });
   })
   it('display API errors', (done) => {
     const error = { status: 123, errors: ['abc'] }
-    errorHandler(error, {}, {
+    errorHandler(error, {} as Request, {
       status: (code) => {
         assert.deepEqual(code, error.status)
         return {
@@ -76,6 +77,6 @@ describe('global error handler', () => {
           }
         }
       }
-    });
+    } as Response, () => undefined);
   })
 });

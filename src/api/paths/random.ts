@@ -1,15 +1,16 @@
-import { queryRandomQuote } from "../../controller.js";
+import { queryRandomQuote } from "../../controller";
+
+import type { OperationFunction } from "express-openapi";
+import type { OpenAPIRequestHandler } from "../../types";
 
 export default function () {
-	/** @type {import("express").RequestHandler} */
-	function GET(_, response, next) {
+	const GET: OpenAPIRequestHandler = (_, response, next) => {
 		return queryRandomQuote()
 			.then(quote => response.send(quote))
 			.catch(next);
 	}
 
-	/** @type {import("express-openapi").OperationFunction['apiDoc']} */
-	const apiDoc = {
+	const apiDoc: OperationFunction['apiDoc'] = {
 		summary: 'Get a random quote',
 		operationId: 'random',
 		responses: {

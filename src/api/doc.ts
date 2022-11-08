@@ -1,10 +1,8 @@
 import cors from 'cors';
 
-/**
- * @param {string[]} titles
- * @returns {import("express-openapi").ExpressOpenAPIArgs['apiDoc']}
- */
-export default function buildAPIDoc(titles) {
+import type { ExpressOpenAPIArgs } from 'express-openapi';
+
+export default function buildAPIDoc(titles: string[]): ExpressOpenAPIArgs['apiDoc'] {
 	return {
 		openapi: '3.0.0',
 		info: {

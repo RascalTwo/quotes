@@ -1,14 +1,13 @@
-/**
- * @param {string[]} titles
- */
-export default function (titles) {
-	/** @type {import("express").RequestHandler} */
-	function GET(_, response) {
+import type { OperationFunction } from "express-openapi";
+import type { OpenAPIRequestHandler } from "../../types";
+
+
+export default function (titles: string[]) {
+	const GET: OpenAPIRequestHandler = (_, response) => {
 		return response.send(titles);
 	}
 
-	/** @type {import("express-openapi").OperationFunction['apiDoc']} */
-	const apiDoc = {
+	const apiDoc: OperationFunction['apiDoc'] = {
 		summary: 'Get all media titles',
 		operationId: 'titles',
 		responses: {

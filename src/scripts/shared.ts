@@ -1,39 +1,34 @@
 import 'dotenv/config';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
+// @ts-ignore
 import parseSRT from 'parse-srt';
 import { stripHtml } from 'string-strip-html';
 
-/**
- * @typedef {Object} RawQuote
- * @property {RawMedia} media
- * @property {string} string
- * @property {timeStamp} number
- */
+interface RawQuote {
+	media: RawMedia;
+	string: string;
+	timeStamp: number;
+}
 
-/**
- * @typedef {Object} RawMedia
- * @property {string} title
- * @property {number?} season
- * @property {number[]?} episodes
- */
+interface RawMedia {
+	_id?: ObjectId;
+	title: string;
+	season?: number;
+	episodes?: number[];
+}
 
-export const cleanupParsedSRTs = (srt, media) => parseSRT(srt)
-	.map(({ start: timeStamp, text }) => ({
+export const cleanupParsedSRTs = (srt: string, media: RawMedia) => parseSRT(srt)
+	.map(({ start: timeStamp, text }: { start: number, text: string}) => ({
 		media, timeStamp,
 		text: stripHtml(text).result.trim()
 	}))
-	.filter(({ text }) => text);
+	.filter(({ text }: { text: string }) => text);
 
-/**
- * @param {string} title
- * @param {RawQuote[]} quotes
- * @param {RawMedia[]} medias
- */
-export async function replaceInDB(title, quotes, medias) {
+export async function replaceInDB(title: string, quotes: RawQuote[], medias: RawMedia[]) {
 	console.log('Media(s) Parsed  :', medias.length);
 	console.log('Quote(s) Parsed  :', quotes.length);
 
-	const client = new MongoClient(process.env.MONGODB_URL);
+	const client = new MongoClient(process.env.MONGODB_URL!);
 	await client.connect();
 	const db = client.db('quotes');
 	const quotesCollection = db.collection('quotes');

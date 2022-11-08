@@ -3,9 +3,11 @@ import express from 'express';
 import { initialize } from 'express-openapi';
 import swaggerUI from 'swagger-ui-express';
 
-import buildAPIDoc from './api/doc.js';
-import { queryDBForQuote, queryMediaInfo, queryTitles } from './controller.js';
+import buildAPIDoc from './api/doc';
+import { queryDBForQuote, queryMediaInfo, queryTitles } from './controller';
 import { execSync } from 'child_process';
+
+import type { Application, ErrorRequestHandler } from 'express';
 
 
 const DEPLOY_INFO = (() => {
@@ -42,37 +44,35 @@ app.get('/search', (request, response, next) => {
 	if ('page' in givenParams && page == 1) delete givenParams.page;
 	if ('perPage' in givenParams && perPage == 100) delete givenParams.perPage;
 
-	const params = new URLSearchParams(givenParams).toString();
+	const params = new URLSearchParams(givenParams as Record<string, string>).toString();
 	const relativeURL = request.path + (params ? '?' + params : '');
 
 	if (relativeURL !== request.url) return response.redirect(relativeURL);
 
-	return queryDBForQuote(query, title, season, episodes, +page, +perPage, true)
+	return queryDBForQuote(query as string, title as string, season ? +season : undefined, episodes as string, +page, +perPage, true)
 		.then(async ({ quotes, counts }) => response.render('index.ejs', {
 			quotes, counts,
 			query, title, season, episodes, page,
 			mediaTitles: await queryTitles(),
-			mediaInfo: title ? await queryMediaInfo(title) : undefined,
+			mediaInfo: title ? await queryMediaInfo(title as string) : undefined,
 			relativeURL,
 			DEPLOY_INFO
 		}))
 		.catch(next);
 });
 
-export const errorHandler = (error, _, response, next) => {
+export const errorHandler: ErrorRequestHandler = (error, _, response, next) => {
 	if (error instanceof Error) return next(error)
 	response.status(error.status).send(error.errors);
 }
 
-/**
- * @param {import('express').Application} app
- */
-export const attachOpenAPI = async app => {
+
+export const attachOpenAPI = async (app: Application) => {
 	const titles = await queryTitles();
 	const openAPI = await initialize({
 		app,
 		apiDoc: buildAPIDoc(titles),
-		paths: './api/paths',
+		paths: './dist/api/paths',
 		exposeApiDocs: false,
 		validateApiDoc: true,
 		dependencies: { titles, DEPLOY_INFO }

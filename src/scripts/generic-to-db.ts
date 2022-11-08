@@ -1,8 +1,8 @@
 import fs from 'fs';
 
-import { replaceInDB, cleanupParsedSRTs } from './shared.js'
+import { replaceInDB, cleanupParsedSRTs } from './shared'
 
-async function parseMovieSRT(srtFilepath, title) {
+async function parseMovieSRT(srtFilepath: string, title: string) {
 	const media = { title };
 
 	const srt = (await fs.promises.readFile(srtFilepath)).toString();

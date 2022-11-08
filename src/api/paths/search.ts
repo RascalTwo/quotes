@@ -1,16 +1,18 @@
-import { queryDBForQuote } from "../../controller.js";
+import { queryDBForQuote } from "../../controller";
+
+import type { OperationFunction } from "express-openapi";
+import type { OpenAPIRequestHandler } from "../../types";
 
 
 export default function () {
-	/** @type {import("express").RequestHandler} */
-	function GET({ query: { query, title, season, episode, page, perPage, includeCounts } }, response, next) {
+	const GET: OpenAPIRequestHandler = ({ query: { query, title, season, episode, page, perPage, includeCounts } }, response, next) => {
+		// @ts-ignore
 		return queryDBForQuote(query, title, season, episode, page, perPage, includeCounts)
 			.then((payload) => response.send(payload))
 			.catch(next);
 	}
 
-	/** @type {import("express-openapi").OperationFunction['apiDoc']} */
-	const apiDoc = {
+	const apiDoc: OperationFunction['apiDoc'] = {
 		summary: 'Search for quotes',
 		operationId: 'search',
 		parameters: [

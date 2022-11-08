@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 
-import { replaceInDB, cleanupParsedSRTs } from './shared.js'
+import { replaceInDB, cleanupParsedSRTs } from './shared'
 
-async function parseTVShowSRTs(directory, title) {
+async function parseTVShowSRTs(directory: string, title: string) {
 	const quotes = [];
 	const medias = [];
 
@@ -12,9 +12,9 @@ async function parseTVShowSRTs(directory, title) {
 		const entityAbsolute = path.join(absolute, entityName);
 		if ((await fs.promises.stat(entityAbsolute)).isFile()) continue;
 
-		const season = +entityName.match(/\d+/)[0]
+		const season = +entityName.match(/\d+/)![0]
 		for (const srtFilename of await fs.promises.readdir(entityAbsolute)) {
-			const episode = srtFilename.match(/E\d+/ig).map(e => +e.slice(1)).join('-');
+			const episode = srtFilename.match(/E\d+/ig)!.map(e => +e.slice(1)).join('-');
 			const srt = (await fs.promises.readFile(path.join(entityAbsolute, srtFilename))).toString();
 
 			const media = { title, season, episode };

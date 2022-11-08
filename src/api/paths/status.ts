@@ -1,8 +1,10 @@
-import { queryCounts } from "../../controller.js";
+import { queryCounts } from "../../controller";
 
-export default function (DEPLOY_INFO) {
-	/** @type {import("express").RequestHandler} */
-	function GET(_, response, next) {
+import type { OperationFunction } from "express-openapi";
+import type { OpenAPIRequestHandler } from "../../types";
+
+export default function (DEPLOY_INFO: string) {
+	const GET: OpenAPIRequestHandler = (_, response, next) => {
 		return queryCounts().then(({ medias, quotes }) => response.json({
 			now: new Date(),
 			deployed: DEPLOY_INFO,
@@ -10,8 +12,7 @@ export default function (DEPLOY_INFO) {
 		})).catch(next);
 	}
 
-	/** @type {import("express-openapi").OperationFunction['apiDoc']} */
-	const apiDoc = {
+	const apiDoc: OperationFunction['apiDoc'] = {
 		summary: 'Check the API status',
 		operationId: 'status',
 		responses: {

@@ -1,12 +1,14 @@
 import assert from 'assert'
 import fs from 'fs';
 import path from 'path'
-import { Server } from 'http';
 import { chromium } from 'playwright';
 
 
-import app from '../server.js';
-import { setDatabaseData } from './setup.js';
+import app from '../server';
+import { setDatabaseData } from './setup';
+
+import type { Server } from 'http';
+import type { Browser, Page} from 'playwright';
 
 describe('frontend', function(){
 	before(() => setDatabaseData({
@@ -27,12 +29,12 @@ describe('frontend', function(){
 		]
 	}));
 
-	/** @type {import('playwright').Browser | null} */
-	let browser = null;
-	/** @type {import('playwright').Page | null} */
-	let page = null;
-	/** @type {Server | null} */
-	let server = null;
+	// @ts-ignore
+	let browser: Browser = null;
+	// @ts-ignore
+	let page: Page = null;
+	// @ts-ignore
+	let server: Server = null;
 	beforeEach(async () => {
 		browser = await chromium.launch();
 		const context = await browser.newContext();
@@ -57,18 +59,18 @@ describe('frontend', function(){
 		assert.deepEqual(await page.title(), 'Media Quotes API');
 	});
 
-	const search = (queryParams) => page.goto('http://localhost:1337/search?' + queryParams);
+	const search = (queryParams: string) => page.goto('http://localhost:1337/search?' + queryParams);
 
 	describe('API URL', () => {
 		it('API url is absolute', async () => {
 			await page.goto('http://localhost:1337/');
-			const url = await page.evaluate(() => document.querySelector('code a').textContent);
+			const url = await page.evaluate(() => document.querySelector('code a')?.textContent);
 			assert.deepEqual(url, 'http://localhost:1337/api/search');
 		});
 
 		it('API url updates accordingly', async () => {
 			await search('query=abcdef');
-			const url = await page.evaluate(() => document.querySelector('code a').textContent);
+			const url = await page.evaluate(() => document.querySelector('code a')?.textContent);
 			assert.deepEqual(url, 'http://localhost:1337/api/search?query=abcdef');
 		})
 	})
@@ -115,12 +117,12 @@ describe('frontend', function(){
 		it('season numbers are populated', async () => {
 			await search('');
 
-			const requestedURLs = []
+			const requestedURLs: string[] = []
 			page.on('request', request => requestedURLs.push(request.url()))
 
 			await page.fill('#mediaTitleInput', 'Show');
 			await page.click('#seasonInput');
-			await page.waitForTimeout(100);
+			await page.waitForTimeout(250);
 			assert(requestedURLs.includes('http://localhost:1337/api/media-info?title=Show'), 'network request not made')
 			requestedURLs.splice(requestedURLs.indexOf('http://localhost:1337/api/media-info?title=Show'), 1)
 			assert.deepEqual(
@@ -129,7 +131,7 @@ describe('frontend', function(){
 			);
 			await page.fill('#mediaTitleInput', 'does not exist');
 			await page.click('#seasonInput');
-			await page.waitForTimeout(100);
+			await page.waitForTimeout(250);
 			assert(requestedURLs.includes('http://localhost:1337/api/media-info?title=does%20not%20exist'), 'network request not made')
 			requestedURLs.splice(requestedURLs.indexOf('http://localhost:1337/api/media-info?title=does%20not%20exist'), 1)
 			assert.deepEqual(
@@ -138,7 +140,7 @@ describe('frontend', function(){
 			);
 			await page.fill('#mediaTitleInput', 'Show');
 			await page.click('#seasonInput');
-			await page.waitForTimeout(100);
+			await page.waitForTimeout(250);
 			assert(!requestedURLs.includes('http://localhost:1337/api/media-info?title=Show'), 'network request not cached')
 			assert.deepEqual(
 				await page.$eval('#seasonList', datalist => [...datalist.children].map(child => child.textContent)),
@@ -153,7 +155,7 @@ describe('frontend', function(){
 			await page.type('#seasonInput', '1');
 			await page.click('#episodesInput');
 			assert.deepEqual(
-				await page.$eval('#episodesList', datalist => [...datalist.children].map(child => child.textContent)),
+				await page.$eval('#episodesList', (datalist: HTMLDataListElement) => [...datalist.children].map(child => child.textContent)),
 				['1', '2']
 			);
 		})

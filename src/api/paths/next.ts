@@ -1,17 +1,19 @@
-import { queryPreviousQuote } from "../../controller.js";
+import { queryNextQuote } from "../../controller";
+
+import type { OperationFunction } from "express-openapi";
+import type { OpenAPIRequestHandler } from "../../types";
 
 export default function () {
-	/** @type {import("express").RequestHandler} */
-	function GET({ query: { title, season, episode, timeStamp } }, response, next) {
-		return queryPreviousQuote({ media: { title, season, episode }, timeStamp })
+	const GET: OpenAPIRequestHandler = ({ query: { title, season, episode, timeStamp } }, response, next) => {
+		// @ts-ignore
+		return queryNextQuote({ media: { title, season, episode }, timeStamp })
 			.then(quote => response.send({ quote }))
 			.catch(next);
 	}
 
-	/** @type {import("express-openapi").OperationFunction['apiDoc']} */
-	const apiDoc = {
-		summary: 'Gets previous quote',
-		operationId: 'previousQuote',
+	const apiDoc: OperationFunction['apiDoc'] = {
+		summary: 'Gets next quote',
+		operationId: 'nextQuote',
 		parameters: [
 			{
 				name: 'title',
@@ -52,7 +54,7 @@ export default function () {
 		],
 		responses: {
 			200: {
-				description: 'Previous Quote',
+				description: 'Next Quote',
 				content: {
 					'application/json': {
 						schema: {
