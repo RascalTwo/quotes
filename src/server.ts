@@ -1,3 +1,5 @@
+import path from 'path';
+import fs from 'fs';
 import 'dotenv/config';
 import express from 'express';
 import { initialize } from 'express-openapi';
@@ -25,9 +27,10 @@ const DEPLOY_INFO = (() => {
 
 const app = express();
 app.use(express.static('./public'));
+app.use(express.static('./frontend/dist'));
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', async (_, response) => {
+app.get('/ejs', async (_, response) => {
 	response.render('index.ejs', {
 		quotes: [],
 		mediaTitles: await queryTitles(),
@@ -37,7 +40,7 @@ app.get('/', async (_, response) => {
 	})
 });
 
-app.get('/search', (request, response, next) => {
+app.get('/ejs/search', (request, response, next) => {
 	const { query, title = undefined, season = undefined, episodes = undefined, page = 1, perPage = 100 } = request.query;
 
 	const givenParams = Object.fromEntries(Object.entries(request.query).filter(([_, value]) => value))
@@ -55,7 +58,7 @@ app.get('/search', (request, response, next) => {
 			query, title, season, episodes, page,
 			mediaTitles: await queryTitles(),
 			mediaInfo: title ? await queryMediaInfo(title as string) : undefined,
-			relativeURL,
+			relativeURL: relativeURL.slice(4),
 			DEPLOY_INFO
 		}))
 		.catch(next);
@@ -79,6 +82,12 @@ export const attachOpenAPI = async (app: Application) => {
 	});
 	app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(openAPI.apiDoc));
 	app.use('/api-docs.json', (_, response) => response.send(openAPI.apiDoc));
+
+	const indexPath = path.join(__dirname, '../frontend/dist/index.html')
+	app.get('*', (_, res) => {
+		if (fs.existsSync(indexPath)) return res.sendFile(indexPath);
+		res.status(500).send('Frontend not built');
+	});
 }
 
 export default app;

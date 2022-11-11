@@ -39,14 +39,21 @@
 			button:focus {
 				outline: 1px solid #004daa
 			}
+
+			.view-link {
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
 		</style>
 	</head>
 
 	<body>
 		<input type="hidden" value="<%= typeof query === 'undefined' ? '' : query %>" id="original-query" />
+		<a class="view-link" href="/">Switch to React</a>
 
 		<h1>Media Quotes API</h1>
-		<form action="/search">
+		<form action="/ejs/search">
 			<fieldset>
 				<legend>Controls</legend>
 

@@ -11,13 +11,13 @@ setup(app);
 
 it('index.html returned', () => {
   return request(app)
-    .get('/')
+    .get('/ejs')
     .expect(200)
     .expect('Content-Type', 'text/html; charset=utf-8')
     .expect(/<option>AtLeastOneMediaRequried<\/option>/);
 });
 
-describe('/search', () => {
+describe('/ejs/search', () => {
   before(() => setDatabaseData({
     medias: [
       { _id: 'mid', title: 'Movie' },
@@ -30,27 +30,27 @@ describe('/search', () => {
   }))
   it('returns nothing', () => {
     return request(app)
-      .get('/search')
+      .get('/ejs/search')
       .expect(200)
       .expect('Content-Type', 'text/html; charset=utf-8')
       .expect(/No quotes found/)
   })
   it('empty query returns nothing', () => {
     return request(app)
-      .get('/search?query=')
+      .get('/ejs/search?query=')
       .expect(302)
-      .expect('Location', '/search')
+      .expect('Location', '/ejs/search')
   })
   it('returns quote', () => {
     return request(app)
-      .get('/search?query=One')
+      .get('/ejs/search?query=One')
       .expect(200)
       .expect('Content-Type', 'text/html; charset=utf-8')
       .expect(/1 quotes found/)
   })
   it('title filters out quote', () => {
     return request(app)
-      .get('/search?query=Test&title=None')
+      .get('/ejs/search?query=Test&title=None')
       .expect(200)
       .expect('Content-Type', 'text/html; charset=utf-8')
       .expect(/No quotes found/)

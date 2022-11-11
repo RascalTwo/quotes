@@ -55,15 +55,15 @@ describe('frontend', function(){
 	})
 
 	it('page loads', async () => {
-		await page.goto('http://localhost:1337/');
+		await page.goto('http://localhost:1337/ejs');
 		assert.deepEqual(await page.title(), 'Media Quotes API');
 	});
 
-	const search = (queryParams: string) => page.goto('http://localhost:1337/search?' + queryParams);
+	const search = (queryParams: string) => page.goto('http://localhost:1337/ejs/search?' + queryParams);
 
 	describe('API URL', () => {
 		it('API url is absolute', async () => {
-			await page.goto('http://localhost:1337/');
+			await page.goto('http://localhost:1337/ejs');
 			const url = await page.evaluate(() => document.querySelector('code a')?.textContent);
 			assert.deepEqual(url, 'http://localhost:1337/api/search');
 		});

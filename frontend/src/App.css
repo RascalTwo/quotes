@@ -1,0 +1,38 @@
+h1, h2, p, ul {
+	text-align: center;
+}
+
+fieldset {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	width: max-content;
+	margin: auto;
+}
+
+ul {
+	list-style: none;
+	padding: 0;
+}
+
+.quote-item {
+	margin: 1rem 0;
+}
+
+.text {
+	margin-left: 1rem;
+}
+
+.media-title {
+	font-size: 2rem;
+	list-style: none;
+}
+
+button:focus {
+	outline: 1px solid #004daa
+}
+
+.view-link {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
