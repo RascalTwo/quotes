@@ -12,16 +12,15 @@ import { execSync } from 'child_process';
 import type { Application, ErrorRequestHandler } from 'express';
 
 
+/* c8 ignore next */
 const DEPLOY_INFO = (() => {
-	const prefix = process.env.npm_package_version;
-	/* c8 ignore next */
-	if (process.env.HEROKU_SLUG_COMMIT) return prefix + '-' + process.env.HEROKU_SLUG_COMMIT.slice(0, 7) + ' @ ' + process.env.HEROKU_RELEASE_CREATED_AT;
+	const rawParts = [process.env.npm_package_version]
+	if (process.env.HEROKU_SLUG_COMMIT) rawParts.push(process.env.HEROKU_SLUG_COMMIT.slice(0, 7) + ' @ ' + process.env.HEROKU_RELEASE_CREATED_AT);
 
 	try {
-		return prefix + '-' + execSync('git rev-parse HEAD').toString().trim().slice(0, 7);
-		/* c8 ignore next 3 */
-	} catch (e) {
-		return prefix;
+		rawParts.push(execSync('git rev-parse HEAD').toString().trim().slice(0, 7))
+	} finally {
+		return rawParts.filter(part => part !== undefined).join('-');
 	}
 })();
 
