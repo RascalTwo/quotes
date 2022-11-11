@@ -44,7 +44,7 @@ export default (app: Application) => {
 		console.log('Closed test database.');
 		// Two different MongoClient connections are established, one from here and one from the server
 		// which results in the tests hanging - hence the explicit exit.
-		process.exit(0);
+		new Promise(resolve => setTimeout(resolve, 2500)).then(() => process.exit(0));
 	})
 
 }
