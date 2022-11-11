@@ -97,6 +97,7 @@ export default function () {
 								},
 								counts: {
 									type: 'object',
+									required: ['total', 'page'],
 									properties: {
 										total: {
 											description: 'Total number of quotes',

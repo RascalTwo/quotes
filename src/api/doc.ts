@@ -32,7 +32,7 @@ export default function buildAPIDoc(titles: string[]): ExpressOpenAPIArgs['apiDo
 				},
 				Media: {
 					type: 'object',
-					required: ['title', '_id'],
+					required: ['title'],
 					properties: {
 						_id: {
 							type: 'string',
@@ -53,7 +53,11 @@ export default function buildAPIDoc(titles: string[]): ExpressOpenAPIArgs['apiDo
 				Quote: {
 					description: 'A quote',
 					type: 'object',
+					required: ['timeStamp', 'text', 'media'],
 					properties: {
+						timeStamp: {
+							type: 'number',
+						},
 						text: {
 							type: 'string'
 						},

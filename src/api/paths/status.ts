@@ -23,6 +23,7 @@ export default function (DEPLOY_INFO: string) {
 						schema: {
 							type: 'object',
 							description: 'API status',
+							required: ['now', 'deployed', 'medias', 'quotes'],
 							properties: {
 								now: {
 									type: 'string',
