@@ -29,7 +29,10 @@ jobs:
       - name: Install and Build
         run: |
           npm install
+          npm run build
           npm run coverage
+        env:
+          MONGODB_URL: ${{ secrets.MONGODB_URL }}
       - name: Code Coverage Summary
         uses: irongut/CodeCoverageSummary@v1.2.0
         with:
