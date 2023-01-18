@@ -54,7 +54,7 @@ function App() {
 
     return makeRequest(service.mediaInfo({ title }), info => {
       setMediaInfo(info.seasons);
-      setMediaInfos(mediaInfos => ({ ...mediaInfos, [title]: info.seasons }));
+      setMediaInfos(mediaInfos => ({ ...mediaInfos, [title]: info.seasons || {} }));
     });
   }, [queryTitle, mediaTitles]);
 
