@@ -69,8 +69,8 @@ function handleRelativeQuoteClick(relative, { currentTarget: button }) {
 		const newLI = document.createElement('li')
 		newLI.className = 'quote-item'
 		newLI.dataset.title = quote.media.title;
-		newLI.dataset.season = quote.media.season;
-		newLI.dataset.episode = quote.media.episode;
+		newLI.dataset.season = quote.media.season || '';
+		newLI.dataset.episode = quote.media.episode || '';
 		newLI.dataset.timestamp = quote.timeStamp;
 
 		newLI.innerHTML = `
